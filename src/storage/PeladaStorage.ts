@@ -7,7 +7,6 @@ export interface PeladaPersistedPayload {
   players: Player[];
   listaMax: string;
   perTeam: string;
-  balanceByStars: boolean;
 }
 
 export class PeladaStorage {

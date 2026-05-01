@@ -5,7 +5,7 @@
 import { Fut7DrawEngine } from "../domain/Fut7DrawEngine";
 import { ListParser } from "../domain/ListParser";
 import { LISTA_TEMPLATE_WHATSAPP } from "../domain/listaTemplate";
-import { nameKey, normalizePlayer, starLabel, clampStars, toPlayer } from "../domain/playerUtils";
+import { nameKey, normalizePlayer, clampStars, toPlayer } from "../domain/playerUtils";
 import type { Fut7DrawResult, Player } from "../domain/types";
 import { WhatsAppExporter } from "../domain/WhatsAppExporter";
 import { PeladaStorage } from "../storage/PeladaStorage";
@@ -30,7 +30,6 @@ export class PeladaApp {
 
   private readonly playerName = req<HTMLInputElement>("playerName");
   private readonly canGK = req<HTMLInputElement>("canGK");
-  private readonly defaultStarsAdd = req<HTMLSelectElement>("defaultStarsAdd");
   private readonly btnAdd = req<HTMLButtonElement>("btnAdd");
   private readonly pasteList = req<HTMLTextAreaElement>("pasteList");
   private readonly btnPasteImport = req<HTMLButtonElement>("btnPasteImport");
@@ -40,7 +39,6 @@ export class PeladaApp {
   private readonly playerCount = req<HTMLElement>("playerCount");
   private readonly listaMaxEl = req<HTMLInputElement>("listaMax");
   private readonly perTeam = req<HTMLInputElement>("perTeam");
-  private readonly balanceByStars = req<HTMLInputElement>("balanceByStars");
   private readonly btnDraw = req<HTMLButtonElement>("btnDraw");
   private readonly btnClearTeams = req<HTMLButtonElement>("btnClearTeams");
   private readonly btnClearPlayers = req<HTMLButtonElement>("btnClearPlayers");
@@ -64,7 +62,6 @@ export class PeladaApp {
   private bindEvents(): void {
     this.listaMaxEl.addEventListener("change", () => this.saveState());
     this.perTeam.addEventListener("change", () => this.saveState());
-    this.balanceByStars.addEventListener("change", () => this.saveState());
 
     this.btnAdd.addEventListener("click", () => this.addPlayer());
     this.playerName.addEventListener("keydown", (e) => {
@@ -87,8 +84,6 @@ export class PeladaApp {
     if (data.players) this.players = data.players;
     if (data.listaMax != null) this.listaMaxEl.value = String(data.listaMax);
     if (data.perTeam != null) this.perTeam.value = String(data.perTeam);
-    if (typeof data.balanceByStars === "boolean")
-      this.balanceByStars.checked = data.balanceByStars;
   }
 
   private saveState(): void {
@@ -96,7 +91,6 @@ export class PeladaApp {
       players: this.players,
       listaMax: this.listaMaxEl.value,
       perTeam: this.perTeam.value,
-      balanceByStars: this.balanceByStars.checked,
     });
   }
 
@@ -151,7 +145,7 @@ export class PeladaApp {
     this.players.push({
       name,
       canGK: this.canGK.checked,
-      stars: clampStars(this.defaultStarsAdd.value),
+      stars: 3,
     });
     this.playerName.value = "";
     this.canGK.checked = false;
@@ -166,7 +160,7 @@ export class PeladaApp {
     const keys = this.existingNameKeys();
     let added = 0;
     let dup = 0;
-    const defaultS = clampStars(this.defaultStarsAdd.value);
+    const defaultS = clampStars(3);
 
     const entries = ListParser.parse(text);
     for (const parsed of entries) {
@@ -205,9 +199,7 @@ export class PeladaApp {
   }
 
   private extraForPlayer(p: Player): string {
-    const bits: string[] = [starLabel(p.stars)];
-    if (p.canGK) bits.push("gol");
-    return bits.length ? `· ${bits.join(" · ")}` : "";
+    return p.canGK ? "· gol" : "";
   }
 
   private buildNumLi(num: number, label: string, extra: string): HTMLLIElement {
@@ -243,22 +235,6 @@ export class PeladaApp {
       nameSpan.textContent = p.name;
       meta.appendChild(nameSpan);
 
-      const sel = document.createElement("select");
-      sel.className = "compact";
-      sel.setAttribute("aria-label", `Estrelas de ${p.name}`);
-      for (let s = 5; s >= 1; s--) {
-        const opt = document.createElement("option");
-        opt.value = String(s);
-        opt.textContent = starLabel(s);
-        if (p.stars === s) opt.selected = true;
-        sel.appendChild(opt);
-      }
-      sel.addEventListener("change", () => {
-        this.players[index]!.stars = clampStars(sel.value);
-        this.saveState();
-      });
-      meta.appendChild(sel);
-
       if (p.canGK) {
         const b = document.createElement("span");
         b.className = "badge-gk";
@@ -290,7 +266,7 @@ export class PeladaApp {
 
     const listaMax = parseInt(this.listaMaxEl.value, 10);
     const nPerTeam = parseInt(this.perTeam.value, 10);
-    const balance = this.balanceByStars.checked;
+    const balance = false;
 
     if (!Number.isFinite(listaMax) || listaMax < 1) {
       this.showMessage("Tamanho de lista inválido.", "error");
@@ -326,7 +302,6 @@ export class PeladaApp {
 
   private renderDrawResult(r: Fut7DrawResult): void {
     const listaMax = r.listaMax;
-    const balance = r.balance;
     const titularesTotal = r.titularesTotal;
 
     this.listaNumerada.innerHTML = "";
@@ -373,7 +348,7 @@ export class PeladaApp {
       block.appendChild(h3);
       const tm = document.createElement("p");
       tm.className = "team-meta";
-      tm.textContent = `Soma ⭐: ${side.sum}${balance ? " · titulares equilibrados por estrela" : " · ordem do sorteio"}`;
+      tm.textContent = "Ordem do sorteio";
       block.appendChild(tm);
       if (side.gk) {
         const pGk = document.createElement("p");
@@ -384,7 +359,7 @@ export class PeladaApp {
       const ul = document.createElement("ul");
       for (const p of side.members) {
         const li = document.createElement("li");
-        let txt = `${p.name} ${starLabel(p.stars)}`;
+        let txt = p.name;
         if (side.gk && p.name === side.gk.name) txt += " — gol";
         else if (p.canGK) txt += " · pode gol";
         li.textContent = txt;

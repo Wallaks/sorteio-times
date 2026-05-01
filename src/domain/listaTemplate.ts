@@ -7,8 +7,8 @@ function nLines(from: number, to: number): string {
 }
 
 export const LISTA_TEMPLATE_WHATSAPP: string =
-  "⚽ *PELADA FUT7 — LISTA*\n\n" +
-  "_Copiem → coloquem o nome depois do número → mandem de volta no grupo._\n\n" +
+  "⚽ *Lista Pelada - 19h*\n" +
+  "_Não modifique a estrutura da lista._\n\n" +
   "[campo]\n" +
   nLines(1, 18) +
   "\n\n" +
@@ -16,7 +16,4 @@ export const LISTA_TEMPLATE_WHATSAPP: string =
   "1.\n" +
   "2.\n\n" +
   "[supletes]\n" +
-  nLines(1, 8) +
-  "\n" +
-  "(sem limite: se precisar, acrescentem 9. 10. 11. … embaixo)\n\n" +
-  "_Opcional: *1 a *5 no fim do nome (equilibrar times)._";
+  nLines(1, 5);

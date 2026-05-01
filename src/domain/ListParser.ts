@@ -121,6 +121,7 @@ export class ListParser {
         continue;
       }
 
+      if (section === "suplente") continue;
       const parsed = ListParser.parsePasteLine(raw, section === "goleiro");
       if (parsed) out.push(parsed);
     }
@@ -175,17 +176,10 @@ export class ListParser {
         continue;
       }
 
-      if (state === "suplente") {
-        const sp = line.match(/^\s*(\d+)\s+(\S[\s\S]*)$/);
-        if (sp?.[2]?.trim()) {
-          const p = ListParser.parsePasteLine(sp[2]!.trim(), false);
-          if (p) out.push(p);
-          continue;
-        }
-      }
+      if (state === "suplente") continue;
 
-      if (state === "goleiro" || state === "suplente") {
-        const p = ListParser.parsePasteLine(line, state === "goleiro");
+      if (state === "goleiro") {
+        const p = ListParser.parsePasteLine(line, true);
         if (p) out.push(p);
       }
     }
