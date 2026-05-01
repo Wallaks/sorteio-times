@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#1fa86a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Fut7 Sorteio" />
+    <title>Pelada Fut7 — Sorteio</title>
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="./icons/icon.svg" />
+    <link rel="apple-touch-icon" href="./icons/icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Pelada Fut7 — sorteio de times</h1>
+        <p>
+          Uma pessoa cola a lista (ou cadastra aqui): acaba a bagunça de dois editando o WhatsApp ao mesmo tempo.
+          Estrelas opcionais para equilibrar o primeiro sorteio. Tudo roda no navegador — no iPhone: Safari →
+          compartilhar → <strong>Adicionar à Tela de Início</strong> (sem App Store).
+        </p>
+        <span class="pill">Bola 19h · um organizador · print ou copiar texto no grupo</span>
+      </header>
+
+      <section class="card" aria-labelledby="paste-title">
+        <h2 id="paste-title">Lista do grupo (copiar / colar)</h2>
+        <p class="help" style="margin-top: 0">
+          O modelo já vem com <strong>1 a 18</strong> no campo, <strong>2 goleiros</strong> e
+          <strong>suplentes numerados</strong> (dá pra ir além do último número se precisar). Também dá para colar
+          direto a lista do grupo no estilo <strong>Lista do Fut 19:00</strong>, <strong>Goleiros:</strong> e
+          <strong>Suplentes</strong> (como vocês já mandam). Duplicados são ignorados. Estrelas opcionais:
+          <code>*3</code> (1 a 5).
+        </p>
+        <div class="row" style="margin-top: 0.65rem">
+          <button type="button" class="btn-primary" id="btnCopyTemplate">Copiar lista modelo (WhatsApp)</button>
+        </div>
+        <textarea
+          id="pasteList"
+          class="paste-area"
+          placeholder="Cole aqui a lista que voltou do grupo…"
+          autocomplete="off"
+        ></textarea>
+        <div class="row" style="margin-top: 0.65rem">
+          <button type="button" class="btn-primary" id="btnPasteImport">Importar da colagem</button>
+        </div>
+        <p class="help">Sem modelo: um nome por linha ainda funciona. <code>(gol)</code> no fim marca goleiro.</p>
+      </section>
+
+      <section class="card" aria-labelledby="cadastro-title">
+        <h2 id="cadastro-title">Ou um por um <span class="count-badge" id="playerCount">0</span></h2>
+        <div class="row">
+          <input type="text" id="playerName" placeholder="Nome" autocomplete="off" maxlength="80" />
+          <label class="chk-wrap">
+            <input type="checkbox" id="canGK" />
+            Gol
+          </label>
+          <span class="config-row" style="margin: 0">Estrelas</span>
+          <select id="defaultStarsAdd" class="compact" aria-label="Estrelas ao adicionar">
+            <option value="5">5</option>
+            <option value="4">4</option>
+            <option value="3" selected>3</option>
+            <option value="2">2</option>
+            <option value="1">1</option>
+          </select>
+          <button type="button" class="btn-primary" id="btnAdd">Adicionar</button>
+        </div>
+        <ul class="players-list" id="playersList" aria-live="polite"></ul>
+        <p class="empty-hint" id="emptyHint">Nenhum jogador ainda.</p>
+      </section>
+
+      <section class="card" aria-labelledby="config-title">
+        <h2 id="config-title">Regras e sorteio</h2>
+        <div class="row config-row">
+          <label for="listaMax">Lista (1 a …)</label>
+          <input type="number" id="listaMax" min="1" max="40" value="18" />
+          <label for="perTeam">Por time</label>
+          <input type="number" id="perTeam" min="1" max="11" value="7" />
+        </div>
+        <div class="row" style="margin-top: 0.65rem">
+          <label class="chk-wrap">
+            <input type="checkbox" id="balanceByStars" checked />
+            Equilibrar titulares por ⭐ (1º sorteio)
+          </label>
+        </div>
+        <p class="help">
+          Com equilíbrio: os <strong>14 titulares</strong> (7×7) são divididos tentando deixar a soma de estrelas
+          parecida. A <strong>ordem numerada da lista</strong> continua aleatória (tipo pedrinha). Sem equilíbrio:
+          times intercalados na ordem do sorteio.
+        </p>
+        <div class="row" style="margin-top: 0.75rem">
+          <button type="button" class="btn-primary" id="btnDraw">Sortear</button>
+          <button type="button" class="btn-ghost" id="btnClearTeams">Limpar sorteio</button>
+        </div>
+        <div class="footer-actions">
+          <button type="button" class="btn-ghost" id="btnClearPlayers">Limpar jogadores</button>
+        </div>
+        <div id="message" hidden class="msg"></div>
+        <ul id="warningsBlock" class="warnings-list" hidden></ul>
+      </section>
+
+      <section class="card" id="resultsSection" hidden aria-labelledby="results-title">
+        <h2 id="results-title">Resultado</h2>
+        <div class="result-actions row">
+          <button type="button" class="btn-primary" id="btnCopy">Copiar texto p/ WhatsApp</button>
+        </div>
+
+        <div class="subblock">
+          <h3>Lista (número da “pedra”)</h3>
+          <ul class="num-list" id="listaNumerada"></ul>
+        </div>
+
+        <div class="teams-grid" id="teamsGrid"></div>
+
+        <div class="subblock" id="reservasBlock" hidden>
+          <h3>Reservas da lista</h3>
+          <ul class="num-list" id="reservasList"></ul>
+        </div>
+
+        <div class="subblock" id="supletesBlock" hidden>
+          <h3>Supletes</h3>
+          <ul class="num-list" id="supletesList"></ul>
+        </div>
+      </section>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

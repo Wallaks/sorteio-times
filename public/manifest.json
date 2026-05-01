@@ -1,0 +1,19 @@
+{
+  "name": "Pelada Fut7 — Sorteio",
+  "short_name": "Fut7 Sorteio",
+  "description": "Lista, times e sorteio para pelada fut7 / society",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0c120f",
+  "theme_color": "#1fa86a",
+  "lang": "pt-BR",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
