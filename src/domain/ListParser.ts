@@ -32,10 +32,11 @@ export class ListParser {
     if (!line) return null;
 
     if (/^como preencher/i.test(line)) return null;
-    if (/^lista pelada fut7/i.test(line)) return null;
+    if (/lista pelada/i.test(line)) return null;
     if (/^lista do fut/i.test(line)) return null;
     if (/^_?\s*copiem/i.test(line)) return null;
     if (/não apaguem as linhas/i.test(line)) return null;
+    if (/não modifique/i.test(line)) return null;
     if (/^\(\s*sem limite/i.test(line)) return null;
     if (/^_?\s*opcional:/i.test(line)) return null;
     if (/^_?exemplo/i.test(line)) return null;
@@ -65,6 +66,7 @@ export class ListParser {
     line = line.replace(/^\s*[\d]+[\.)]\s*/, "");
     line = line.replace(/^\s*[-*•]\s+/, "");
     line = line.replace(/^\s*[-*•]\s*/, "");
+    line = line.replace(/[*_~]/g, "");
     line = line.replace(/\s+/g, " ").trim();
 
     if (!line) return null;

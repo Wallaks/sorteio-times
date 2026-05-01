@@ -43,16 +43,12 @@ export class Fut7DrawEngine {
       sumB = sumStars(teamB);
     }
 
-    const gkA = Fut7DrawEngine.assignGk(teamA, "A", warnings);
-    const gkB = Fut7DrawEngine.assignGk(teamB, "B", warnings);
+    const gkA = Fut7DrawEngine.assignGk(teamA);
+    const gkB = Fut7DrawEngine.assignGk(teamB);
 
     const volunteersTotal = players.filter((p) => p.canGK).length;
-    if (volunteersTotal === 0 && titularPlayers.length >= 2) {
-      warnings.push(
-        "Ninguém marcou goleiro: o app sorteou um nome por time só pra referência — combinem antes."
-      );
-    } else if (volunteersTotal === 1 && titularPlayers.length >= 2) {
-      warnings.push("Só há um voluntário de gol no grupo — combinem segundo goleiro ou rodízio.");
+    if (volunteersTotal === 1 && titularPlayers.length >= 2) {
+      warnings.push("Só um goleiro na lista — combinem o segundo no grupo.");
     }
 
     if (titularPlayers.length < titularesTotal) {
@@ -106,20 +102,10 @@ export class Fut7DrawEngine {
     return { teamA, teamB, sumA, sumB };
   }
 
-  private static assignGk(
-    team: readonly Player[],
-    label: string,
-    warnings: string[]
-  ): DrawGkPick {
+  private static assignGk(team: readonly Player[]): DrawGkPick {
     const volunteers = team.filter((p) => p.canGK);
     const chosen = pickRandom(volunteers);
     if (chosen) return { player: chosen, fromVolunteers: true };
-    if (team.length) {
-      warnings.push(
-        `Time "${label}": ninguém marcou "gol". Combinem no grupo quem fecha (ou rodízio).`
-      );
-      return { player: pickRandom([...team]), fromVolunteers: false };
-    }
     return { player: null, fromVolunteers: false };
   }
 }

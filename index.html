@@ -22,6 +22,7 @@
     <div class="wrap">
       <header>
         <h1>Pelada — Sorteio de Times</h1>
+        <button type="button" class="btn-help" id="btnHelp" aria-label="Ajuda">?</button>
       </header>
 
       <section class="card" aria-labelledby="paste-title">
@@ -97,6 +98,31 @@
         </div>
       </section>
     </div>
+
+    <dialog id="helpModal" class="help-modal">
+      <div class="help-modal-inner">
+        <button type="button" class="btn-close-modal" id="btnCloseHelp" aria-label="Fechar">✕</button>
+        <h2>Como usar</h2>
+
+        <h3>Fluxo do organizador</h3>
+        <ol>
+          <li>Clique em <strong>Copiar modelo</strong> e cole no grupo do WhatsApp.</li>
+          <li>O pessoal preenche o nome no número correspondente e manda de volta.</li>
+          <li>Cole a lista que voltou na área de texto e clique <strong>Importar lista</strong>.</li>
+          <li>Configure o tamanho da lista e quantos jogam por time.</li>
+          <li>Clique <strong>Sortear</strong> e depois <strong>Copiar texto p/ WhatsApp</strong> para mandar os times no grupo.</li>
+        </ol>
+
+        <h3>Lista variável</h3>
+        <p>Nem sempre fecha com 18. O mínimo para jogar é 6 por lado (12 no total). Ajuste o campo <strong>Tamanho da lista</strong> antes de sortear.</p>
+
+        <h3>Goleiros</h3>
+        <p>São opcionais. Se alguém se inscrever na seção <strong>[goleiros]</strong> da lista, o app mostra o nome no resultado. Se não tiver goleiro, quem ficou de fora decide quem vai no gol — o app não precisa decidir isso.</p>
+
+        <h3>Instalar no celular (iPhone)</h3>
+        <p>Safari → botão compartilhar → <strong>Adicionar à Tela de Início</strong>. Fica com ícone na home sem precisar de App Store.</p>
+      </div>
+    </dialog>
 
     <script type="module" src="/src/main.ts"></script>
   </body>

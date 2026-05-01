@@ -52,6 +52,9 @@ export class PeladaApp {
   private readonly reservasList = req<HTMLUListElement>("reservasList");
   private readonly supletesBlock = req<HTMLElement>("supletesBlock");
   private readonly supletesList = req<HTMLUListElement>("supletesList");
+  private readonly helpModal = req<HTMLDialogElement>("helpModal");
+  private readonly btnHelp = req<HTMLButtonElement>("btnHelp");
+  private readonly btnCloseHelp = req<HTMLButtonElement>("btnCloseHelp");
 
   mount(): void {
     this.loadState();
@@ -76,6 +79,11 @@ export class PeladaApp {
     this.btnClearTeams.addEventListener("click", () => this.clearTeams());
     this.btnClearPlayers.addEventListener("click", () => this.clearPlayers());
     this.btnCopy.addEventListener("click", () => this.copyShare());
+    this.btnHelp.addEventListener("click", () => this.helpModal.showModal());
+    this.btnCloseHelp.addEventListener("click", () => this.helpModal.close());
+    this.helpModal.addEventListener("click", (e) => {
+      if (e.target === this.helpModal) this.helpModal.close();
+    });
   }
 
   private loadState(): void {
@@ -353,7 +361,7 @@ export class PeladaApp {
       if (side.gk) {
         const pGk = document.createElement("p");
         pGk.className = "gk-line";
-        pGk.textContent = `Goleiro: ${side.gk.name}${side.gkVol ? " (voluntário)" : " (sorteado — combinar)"}`;
+        pGk.textContent = `Goleiro: ${side.gk.name}`;
         block.appendChild(pGk);
       }
       const ul = document.createElement("ul");
