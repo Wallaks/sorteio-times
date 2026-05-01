@@ -22,7 +22,7 @@ export class ListParser {
   }
 
   static isStructuredList(text: string): boolean {
-    return /\[\s*(campo|(titular|titulares)|lista(?:\s*principal)?|goleiros?|suplentes?)\s*\]/i.test(
+    return /\[\s*(campo|(titular|titulares)|lista(?:\s*principal)?|goleiros?|suplentes?|supletes)\s*\]/i.test(
       String(text)
     );
   }
@@ -84,15 +84,15 @@ export class ListParser {
       .replace(/:+\s*$/, "")
       .trim();
     if (u === "goleiros" || u === "goleiro") return "goleiro";
-    if (u === "suplentes" || u === "suplente") return "suplente";
+    if (u === "suplentes" || u === "suplente" || u === "supletes") return "suplente";
     const u2 = t.toLowerCase().replace(/\*/g, "");
     const bracket =
-      /^\[\s*(campo|(titular|titulares)|lista(?:\s*principal)?|goleiros?|suplentes?)\s*\]$/i;
+      /^\[\s*(campo|(titular|titulares)|lista(?:\s*principal)?|goleiros?|suplentes?|supletes)\s*\]$/i;
     const bm = t.match(bracket);
     if (bm) {
       const k = bm[1]!.toLowerCase();
-      if (k.includes("goleiro")) return "goleiro";
-      if (k.includes("suplente")) return "suplente";
+      if (k.startsWith("goleiro")) return "goleiro";
+      if (k.startsWith("suplet")) return "suplente";
       return "campo";
     }
     if (
