@@ -19,7 +19,7 @@ Transformar texto colado do grupo em uma lista estruturada de participantes com 
    [goleiros]
    1. Goleiro1
    2. Goleiro2
-   [supletes]
+   [suplentes]
    1. Suplente1
    ```
 2. **Lista do Fut** estilo livre do WhatsApp:
@@ -37,7 +37,7 @@ Transformar texto colado do grupo em uma lista estruturada de participantes com 
 ## Regras de interpretação
 
 1. Linhas vazias, separadores (`---`, `———`) e instruções conhecidas são ignoradas (filtros explícitos no parser).
-2. **Suplentes / supletes são totalmente ignorados** — a seção é apenas controle do grupo no Zap, não compõe sorteio.
+2. **Suplentes / suplentes são totalmente ignorados** — a seção é apenas controle do grupo no Zap, não compõe sorteio.
 3. **Duplicatas** pelo mesmo nome normalizado (acentos, caixa) são ignoradas.
 4. **Markdown do WhatsApp** (`*nome*`, `_nome_`, `~nome~`) é removido antes do parse.
 5. Caracteres invisíveis (zero-width) são removidos (`stripInvisible`).

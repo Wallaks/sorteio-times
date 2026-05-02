@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:celadon-palmier-f76ac3.netlify.app)"
+      "WebFetch(domain:celadon-palmier-f76ac3.netlify.app)",
+      "Bash(npx tsx *)",
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Skill(schedule)"
     ]
   }
 }

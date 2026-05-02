@@ -13,7 +13,7 @@ Distribuir jogadores em **dois times** (Colete Azul × Colete Vermelho) seguindo
 ### Jogadores de linha
 
 1. Todos os jogadores **não-goleiros** entram num pool único e são embaralhados (Fisher-Yates).
-2. O pool é cortado em `listaMax` (default 18) → `naLista` e `foraLista` (supletes que sobraram).
+2. O pool é cortado em `listaMax` (default 18) → `naLista` e `foraLista` (suplentes que sobraram).
 3. Os primeiros `2 × nPerTeam` (default `2 × 6 = 12`) são os titulares de linha; o restante de `naLista` vira **reservas**.
 4. Titulares são distribuídos alternadamente entre Time A e Time B (`i % 2`). Como o pool já está embaralhado, isso é equivalente a sortear cada um para um lado.
 

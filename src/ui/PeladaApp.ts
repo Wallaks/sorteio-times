@@ -50,8 +50,8 @@ export class PeladaApp {
   private readonly teamsGrid = req<HTMLElement>("teamsGrid");
   private readonly reservasBlock = req<HTMLElement>("reservasBlock");
   private readonly reservasList = req<HTMLUListElement>("reservasList");
-  private readonly supletesBlock = req<HTMLElement>("supletesBlock");
-  private readonly supletesList = req<HTMLUListElement>("supletesList");
+  private readonly suplentesBlock = req<HTMLElement>("suplentesBlock");
+  private readonly suplentesList = req<HTMLUListElement>("suplentesList");
   private readonly helpModal = req<HTMLDialogElement>("helpModal");
   private readonly btnHelp = req<HTMLButtonElement>("btnHelp");
   private readonly btnCloseHelp = req<HTMLButtonElement>("btnCloseHelp");
@@ -377,11 +377,11 @@ export class PeladaApp {
     }
 
     if (r.foraLista.length) {
-      this.supletesBlock.hidden = false;
-      this.supletesList.innerHTML = "";
+      this.suplentesBlock.hidden = false;
+      this.suplentesList.innerHTML = "";
       r.foraLista.forEach((p, i) => {
         const ex = this.extraForPlayer(p);
-        this.supletesList.appendChild(
+        this.suplentesList.appendChild(
           this.buildNumLi(
             i + 1,
             p.name,
@@ -390,8 +390,8 @@ export class PeladaApp {
         );
       });
     } else {
-      this.supletesBlock.hidden = true;
-      this.supletesList.innerHTML = "";
+      this.suplentesBlock.hidden = true;
+      this.suplentesList.innerHTML = "";
     }
   }
 
@@ -413,9 +413,9 @@ export class PeladaApp {
     this.listaNumerada.innerHTML = "";
     this.teamsGrid.innerHTML = "";
     this.reservasList.innerHTML = "";
-    this.supletesList.innerHTML = "";
+    this.suplentesList.innerHTML = "";
     this.reservasBlock.hidden = true;
-    this.supletesBlock.hidden = true;
+    this.suplentesBlock.hidden = true;
     this.resultsSection.hidden = true;
     this.lastShareText = "";
     this.hideMessage();

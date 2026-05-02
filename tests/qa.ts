@@ -51,7 +51,7 @@ _Não modifique a estrutura da lista._
 1. Leandro
 2. Sergio
 
-[supletes]
+[suplentes]
 1. Igor
 2. Renato
 3.
@@ -65,7 +65,7 @@ ok("Título não vira jogador", !names1.includes("⚽ *Lista Pelada - 19h*") && 
 ok("Instrução não vira jogador", !names1.some(n => n.includes("Não modifique")));
 ok("18 jogadores de campo importados", r1.filter((p) => !p.canGK).length === 18, `got ${r1.filter(p => !p.canGK).length}`);
 ok("2 goleiros importados", r1.filter((p) => p.canGK).length === 2, `got ${r1.filter(p => p.canGK).length}`);
-ok("Supletes ignorados (Igor e Renato fora)", !names1.includes("Igor") && !names1.includes("Renato"));
+ok("Suplentes ignorados (Igor e Renato fora)", !names1.includes("Igor") && !names1.includes("Renato"));
 ok("Total 20 jogadores (18 campo + 2 gol)", r1.length === 20, `got ${r1.length}`);
 ok("Primeiro jogador é João", r1[0]?.name === "João");
 ok("Leandro marcado como goleiro", r1.find(p => p.name === "Leandro")?.canGK === true);
@@ -92,13 +92,13 @@ const listaMinima = `[campo]
 1.
 2.
 
-[supletes]
+[suplentes]
 1.`;
 
 const r2 = ListParser.parse(listaMinima);
 ok("12 jogadores importados", r2.length === 12, `got ${r2.length}`);
 ok("Nenhum goleiro (slots vazios ignorados)", r2.filter((p) => p.canGK).length === 0);
-ok("Supletes ignorados (slot vazio)", r2.length === 12);
+ok("Suplentes ignorados (slot vazio)", r2.length === 12);
 
 // ─── 3. ListParser: lista plana (um nome por linha) ──────────────────────────
 console.log("\n[3] Import: lista plana sem seções");
@@ -203,7 +203,7 @@ ok("Goleiro B atribuído (voluntário)", d5.gkB.player !== null && d5.gkB.fromVo
 ok("Goleiros são distintos", d5.gkA.player?.name !== d5.gkB.player?.name);
 ok("Goleiros são GK1 e GK2", [d5.gkA.player?.name, d5.gkB.player?.name].sort().join(",") === "GK1,GK2");
 ok("Sem reservas (12 = titulares totais)", d5.reservas.length === 0);
-ok("Sem supletes", d5.foraLista.length === 0);
+ok("Sem suplentes", d5.foraLista.length === 0);
 ok("Sem warnings", d5.warnings.length === 0, `warnings: ${d5.warnings.join("; ")}`);
 
 // invariância: 50 sorteios, goleiros sempre saem dos voluntários, sempre 6+6
@@ -302,12 +302,12 @@ ok("18 de linha na lista", d9.naLista.length === 18);
 ok("Time A com 6", d9.teamA.length === 6);
 ok("Time B com 6", d9.teamB.length === 6);
 ok("6 reservas de linha (18 - 12)", d9.reservas.length === 6, `got ${d9.reservas.length}`);
-ok("Sem supletes (todos cabem em 18)", d9.foraLista.length === 0);
+ok("Sem suplentes (todos cabem em 18)", d9.foraLista.length === 0);
 ok("Goleiros sempre jogam (não estão em reservas)", d9.reservas.every(p => !p.canGK));
 ok("Goleiros sempre jogam (não estão em foraLista)", d9.foraLista.every(p => !p.canGK));
 
-// ─── 10. DrawEngine: 20 inscritos de linha, lista máx 18 (2 supletes) ────────
-console.log("\n[10] Draw: 20 de linha, listaMax 18 (2 supletes)");
+// ─── 10. DrawEngine: 20 inscritos de linha, lista máx 18 (2 suplentes) ────────
+console.log("\n[10] Draw: 20 de linha, listaMax 18 (2 suplentes)");
 
 const jogadores20 = Array.from({ length: 20 }, (_, i) => ({
   name: `X${i + 1}`,
@@ -317,7 +317,7 @@ const jogadores20 = Array.from({ length: 20 }, (_, i) => ({
 const d10 = engine.draw(jogadores20, { listaMax: 18, nPerTeam: 6 });
 
 ok("18 na lista (cortados em listaMax)", d10.naLista.length === 18);
-ok("2 supletes (fora da lista)", d10.foraLista.length === 2, `got ${d10.foraLista.length}`);
+ok("2 suplentes (fora da lista)", d10.foraLista.length === 2, `got ${d10.foraLista.length}`);
 ok("6 reservas na lista", d10.reservas.length === 6);
 
 // ─── 11. WhatsAppExporter ─────────────────────────────────────────────────────
@@ -346,11 +346,11 @@ console.log("\n[12] Template da lista");
 ok("Título correto", LISTA_TEMPLATE_WHATSAPP.includes("Lista Pelada - 19h"));
 ok("Tem [campo]", LISTA_TEMPLATE_WHATSAPP.includes("[campo]"));
 ok("Tem [goleiros]", LISTA_TEMPLATE_WHATSAPP.includes("[goleiros]"));
-ok("Tem [supletes]", LISTA_TEMPLATE_WHATSAPP.includes("[supletes]"));
+ok("Tem [suplentes]", LISTA_TEMPLATE_WHATSAPP.includes("[suplentes]"));
 ok("Não tem instrução de estrelas", !LISTA_TEMPLATE_WHATSAPP.toLowerCase().includes("estrela"));
-const supIdx = LISTA_TEMPLATE_WHATSAPP.indexOf("[supletes]");
-const afterSupletes = LISTA_TEMPLATE_WHATSAPP.slice(supIdx);
-ok("Supletes só até 5", afterSupletes.includes("5.") && !afterSupletes.includes("6."));
+const supIdx = LISTA_TEMPLATE_WHATSAPP.indexOf("[suplentes]");
+const afterSuplentes = LISTA_TEMPLATE_WHATSAPP.slice(supIdx);
+ok("Suplentes só até 5", afterSuplentes.includes("5.") && !afterSuplentes.includes("6."));
 
 // ─── Resultado final ──────────────────────────────────────────────────────────
 console.log(`\n${"─".repeat(48)}`);

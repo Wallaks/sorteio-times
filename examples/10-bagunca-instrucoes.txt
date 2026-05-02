@@ -26,6 +26,6 @@ Como preencher: bota o nome no número correspondente.
 ———
 2.
 
-[supletes]
+[suplentes]
 1. Igor
 2. Renato

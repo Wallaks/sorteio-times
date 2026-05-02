@@ -29,7 +29,7 @@ export class WhatsAppExporter {
     }
     if (r.foraLista.length) {
       lines.push("");
-      lines.push(`*Supletes (fora da lista de ${r.listaMax})*`);
+      lines.push(`*Suplentes (fora da lista de ${r.listaMax})*`);
       r.foraLista.forEach((p) => lines.push(`• ${p.name}`));
     }
     lines.push("");

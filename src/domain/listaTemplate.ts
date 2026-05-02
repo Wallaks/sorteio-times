@@ -15,5 +15,5 @@ export const LISTA_TEMPLATE_WHATSAPP: string =
   "[goleiros]\n" +
   "1.\n" +
   "2.\n\n" +
-  "[supletes]\n" +
+  "[suplentes]\n" +
   nLines(1, 5);

@@ -4,10 +4,10 @@ Cole o conteúdo dos arquivos abaixo na área "Lista do grupo" da app pra ver co
 
 | # | Arquivo | O que testa | Resultado esperado |
 |---|---------|-------------|--------------------|
-| 01 | [completa-padrao.txt](01-completa-padrao.txt) | Template ideal: 18 de linha + 2 goleiros + supletes preenchidos | 6+6 titulares, 6 reservas, 2 goleiros voluntários, supletes ignorados, sem warnings |
+| 01 | [completa-padrao.txt](01-completa-padrao.txt) | Template ideal: 18 de linha + 2 goleiros + suplentes preenchidos | 6+6 titulares, 6 reservas, 2 goleiros voluntários, suplentes ignorados, sem warnings |
 | 02 | [sem-goleiro.txt](02-sem-goleiro.txt) | 12 de linha, nenhum goleiro inscrito | 6+6 titulares, gkA/gkB nulos, warning "Sem goleiros na lista" |
 | 03 | [um-goleiro.txt](03-um-goleiro.txt) | 14 de linha + 1 goleiro | 6+6 titulares, 2 reservas, 1 time com goleiro, warning "Só um goleiro" |
-| 04 | [cheia-com-supletes.txt](04-cheia-com-supletes.txt) | 20 inscritos de linha + 2 goleiros (lista cheia + sobrou suplente) | 6+6 titulares, 6 reservas, 2 supletes "fora da lista de 18" |
+| 04 | [cheia-com-suplentes.txt](04-cheia-com-suplentes.txt) | 20 inscritos de linha + 2 goleiros (lista cheia + sobrou suplente) | 6+6 titulares, 6 reservas, 2 suplentes "fora da lista de 18" |
 | 05 | [lista-curta-incompleta.txt](05-lista-curta-incompleta.txt) | Só 8 jogadores, fica abaixo do mínimo | 4+4 titulares, warning "Titulares de linha: 8/12" |
 | 06 | [formato-lista-do-fut.txt](06-formato-lista-do-fut.txt) | Formato livre do Zap (sem colchetes, com cabeçalhos `Goleiros:` / `Suplentes`) | Importa só linha + goleiros, ignora suplentes |
 | 07 | [lista-plana.txt](07-lista-plana.txt) | Só nomes, um por linha, sem cabeçalho nenhum | Todos importados como jogadores de linha |
@@ -24,7 +24,7 @@ Cole o conteúdo dos arquivos abaixo na área "Lista do grupo" da app pra ver co
 3. Na app, cola na textarea "Lista do grupo" e clica **Importar lista**.
 4. Confere a lista de jogadores que apareceu.
 5. Ajusta `Tamanho da lista` e `Por time` se quiser, e clica **Sortear**.
-6. Confere os times, reservas, supletes e os warnings.
+6. Confere os times, reservas, suplentes e os warnings.
 
 ## Notas
 

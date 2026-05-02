@@ -19,5 +19,5 @@ _Não modifique a estrutura da lista._
 1.
 2.
 
-[supletes]
+[suplentes]
 1.

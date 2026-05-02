@@ -20,5 +20,5 @@ _Não modifique a estrutura da lista._
 2. Sergio
 3. Mauro
 
-[supletes]
+[suplentes]
 1.
