@@ -1,111 +1,72 @@
 /**
- * Sorteio Fut7 — dois times, goleiros, equilíbrio opcional por estrelas.
+ * Sorteio Fut7 — sorteia jogadores de linha em dois times.
+ * Goleiros são separados do sorteio: se inscritos, sempre começam jogando.
  * @see docs/features/F-002-sorteio-times.md
  */
 
 import type { DrawConfig, DrawGkPick, Fut7DrawResult, Player } from "./types";
 import { normalizePlayer } from "./playerUtils";
-import { pickRandom, shuffle, sumStars } from "./random";
+import { shuffle } from "./random";
 
 export class Fut7DrawEngine {
   draw(players: readonly Player[], config: DrawConfig): Fut7DrawResult {
     const listaMax = config.listaMax;
     const nPerTeam = config.nPerTeam;
-    const balance = config.balanceByStars;
     const titularesTotal = nPerTeam * 2;
 
-    const listaOrder = shuffle(players.map((p) => normalizePlayer(p)));
+    const normalized = players.map((p) => normalizePlayer(p));
+    const fieldPlayers = normalized.filter((p) => !p.canGK);
+    const goalkeepers = normalized.filter((p) => p.canGK);
+
+    const fieldOrder = shuffle(fieldPlayers);
+    const naLista = fieldOrder.slice(0, Math.min(listaMax, fieldOrder.length));
+    const foraLista = fieldOrder.slice(listaMax);
+
+    const titulares = naLista.slice(0, Math.min(titularesTotal, naLista.length));
+    const teamA: Player[] = [];
+    const teamB: Player[] = [];
+    titulares.forEach((p, i) => {
+      if (i % 2 === 0) teamA.push(p);
+      else teamB.push(p);
+    });
+    const reservas = naLista.slice(titularesTotal);
+
+    const shuffledGks = shuffle(goalkeepers);
+    const gkA: DrawGkPick = shuffledGks[0]
+      ? { player: shuffledGks[0], fromVolunteers: true }
+      : { player: null, fromVolunteers: false };
+    const gkB: DrawGkPick = shuffledGks[1]
+      ? { player: shuffledGks[1], fromVolunteers: true }
+      : { player: null, fromVolunteers: false };
+
     const warnings: string[] = [];
-
-    const naLista = listaOrder.slice(0, Math.min(listaMax, listaOrder.length));
-    const foraLista = listaOrder.slice(listaMax);
-
-    const titularPlayers = listaOrder.slice(0, Math.min(titularesTotal, listaOrder.length));
-    let teamA: Player[];
-    let teamB: Player[];
-    let sumA: number;
-    let sumB: number;
-
-    if (balance && titularPlayers.length > 0) {
-      const sp = Fut7DrawEngine.splitTitularesBalanced(titularPlayers);
-      teamA = sp.teamA;
-      teamB = sp.teamB;
-      sumA = sp.sumA;
-      sumB = sp.sumB;
-    } else {
-      teamA = [];
-      teamB = [];
-      titularPlayers.forEach((p, i) => {
-        if (i % 2 === 0) teamA.push(p);
-        else teamB.push(p);
-      });
-      sumA = sumStars(teamA);
-      sumB = sumStars(teamB);
+    if (goalkeepers.length === 0 && titulares.length >= 2) {
+      warnings.push("Sem goleiros na lista — combinem entre os de fora quem vai no gol.");
+    } else if (goalkeepers.length === 1 && titulares.length >= 2) {
+      warnings.push("Só um goleiro na lista — o outro time tira o gol entre quem ficou de fora.");
     }
-
-    const gkA = Fut7DrawEngine.assignGk(teamA);
-    const gkB = Fut7DrawEngine.assignGk(teamB);
-
-    const volunteersTotal = players.filter((p) => p.canGK).length;
-    if (volunteersTotal === 1 && titularPlayers.length >= 2) {
-      warnings.push("Só um goleiro na lista — combinem o segundo no grupo.");
-    }
-
-    if (titularPlayers.length < titularesTotal) {
+    if (titulares.length < titularesTotal) {
       warnings.push(
-        `Titulares: ${titularPlayers.length}/${titularesTotal} — dá pra jogar com menos ou esperar chegada.`
+        `Titulares de linha: ${titulares.length}/${titularesTotal} — dá pra jogar com menos ou esperar chegada.`
       );
     }
-
-    const reservas = naLista.slice(titularesTotal);
 
     return {
       listaMax,
       nPerTeam,
-      balance,
-      listaOrder,
+      balance: false,
+      listaOrder: fieldOrder,
       naLista,
       foraLista,
       teamA,
       teamB,
-      sumA,
-      sumB,
+      sumA: 0,
+      sumB: 0,
       gkA,
       gkB,
       reservas,
       titularesTotal,
       warnings,
     };
-  }
-
-  private static splitTitularesBalanced(titularPlayers: readonly Player[]): {
-    teamA: Player[];
-    teamB: Player[];
-    sumA: number;
-    sumB: number;
-  } {
-    const pool = shuffle(titularPlayers.slice());
-    pool.sort((a, b) => b.stars - a.stars);
-    const teamA: Player[] = [];
-    const teamB: Player[] = [];
-    let sumA = 0;
-    let sumB = 0;
-    for (const p of pool) {
-      if (sumA <= sumB) {
-        teamA.push(p);
-        sumA += p.stars;
-      } else {
-        teamB.push(p);
-        sumB += p.stars;
-      }
-    }
-    return { teamA, teamB, sumA, sumB };
-  }
-
-  private static assignGk(team: readonly Player[]): DrawGkPick {
-    const volunteers = team.filter((p) => p.canGK);
-    const chosen = pickRandom(volunteers);
-    if (chosen) return { player: chosen, fromVolunteers: true };
-    return { player: null, fromVolunteers: false };
   }
 }

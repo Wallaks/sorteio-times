@@ -358,21 +358,15 @@ export class PeladaApp {
       tm.className = "team-meta";
       tm.textContent = "Ordem do sorteio";
       block.appendChild(tm);
-      if (side.gk) {
-        const pGk = document.createElement("p");
-        pGk.className = "gk-line";
-        pGk.textContent = `Goleiro: ${side.gk.name}`;
-        block.appendChild(pGk);
-      }
+      const pGk = document.createElement("p");
+      pGk.className = "gk-line";
+      pGk.textContent = side.gk ? `Goleiro: ${side.gk.name}` : "Goleiro: a combinar (sai um da reserva)";
+      block.appendChild(pGk);
       const ul = document.createElement("ul");
-      for (const p of side.members) {
-        const li = document.createElement("li");
-        let txt = p.name;
-        if (side.gk && p.name === side.gk.name) txt += " — gol";
-        else if (p.canGK) txt += " · pode gol";
-        li.textContent = txt;
-        ul.appendChild(li);
-      }
+      ul.className = "num-list";
+      side.members.forEach((p, i) => {
+        ul.appendChild(this.buildNumLi(i + 1, p.name, ""));
+      });
       block.appendChild(ul);
       this.teamsGrid.appendChild(block);
     });

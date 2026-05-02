@@ -130,59 +130,81 @@ ok("Underscores removidos do nome", r4[1]?.name === "Pedro Santos", `got "${r4[1
 ok("Nome sem markdown intacto", r4[2]?.name === "Carlos");
 ok("Goleiro com markdown limpo", r4[3]?.name === "Leandro" && r4[3]?.canGK === true);
 
-// ─── 5. DrawEngine: 14 jogadores, 2 goleiros, 7 por time ─────────────────────
-console.log("\n[5] Draw: 14 jogadores + 2 goleiros, 7 por time");
+// ─── 5. DrawEngine: 12 campo + 2 goleiros, 6 por time (caso ideal) ───────────
+console.log("\n[5] Draw: 12 jogadores de linha + 2 goleiros, 6 por time");
 
-const jogadores14 = Array.from({ length: 14 }, (_, i) => ({
-  name: `Jogador${i + 1}`,
-  canGK: i < 2,
-  stars: 3,
-}));
+const cenario12mais2 = [
+  ...Array.from({ length: 12 }, (_, i) => ({ name: `Linha${i + 1}`, canGK: false, stars: 3 })),
+  { name: "GK1", canGK: true, stars: 3 },
+  { name: "GK2", canGK: true, stars: 3 },
+];
 
 const engine = new Fut7DrawEngine();
-const d5 = engine.draw(jogadores14, { listaMax: 14, nPerTeam: 7, balanceByStars: false });
+const d5 = engine.draw(cenario12mais2, { listaMax: 18, nPerTeam: 6, balanceByStars: false });
 
-ok("14 na lista", d5.naLista.length === 14);
-ok("Time A com 7", d5.teamA.length === 7, `got ${d5.teamA.length}`);
-ok("Time B com 7", d5.teamB.length === 7, `got ${d5.teamB.length}`);
-ok("Sem reservas", d5.reservas.length === 0);
+ok("naLista é só campo (12 jogadores)", d5.naLista.length === 12, `got ${d5.naLista.length}`);
+ok("naLista não contém goleiros", d5.naLista.every(p => !p.canGK));
+ok("Time A com 6 de linha", d5.teamA.length === 6, `got ${d5.teamA.length}`);
+ok("Time B com 6 de linha", d5.teamB.length === 6, `got ${d5.teamB.length}`);
+ok("Times só têm jogadores de linha", d5.teamA.every(p => !p.canGK) && d5.teamB.every(p => !p.canGK));
+ok("Goleiro A atribuído (voluntário)", d5.gkA.player !== null && d5.gkA.fromVolunteers);
+ok("Goleiro B atribuído (voluntário)", d5.gkB.player !== null && d5.gkB.fromVolunteers);
+ok("Goleiros são distintos", d5.gkA.player?.name !== d5.gkB.player?.name);
+ok("Goleiros são GK1 e GK2", [d5.gkA.player?.name, d5.gkB.player?.name].sort().join(",") === "GK1,GK2");
+ok("Sem reservas (12 = titulares totais)", d5.reservas.length === 0);
 ok("Sem supletes", d5.foraLista.length === 0);
-ok("Goleiro atribuído sempre vem dos voluntários",
-  (d5.gkA.player === null || d5.gkA.fromVolunteers) &&
-  (d5.gkB.player === null || d5.gkB.fromVolunteers));
-ok("Pelo menos um time tem goleiro voluntário", d5.gkA.player !== null || d5.gkB.player !== null);
 ok("Sem warnings", d5.warnings.length === 0, `warnings: ${d5.warnings.join("; ")}`);
 
-// Roda 50x para garantir que a invariante sempre vale (sem erro de runtime)
-let gkBugFound = false;
+// invariância: 50 sorteios, goleiros sempre saem dos voluntários, sempre 6+6
+let invariantOk = true;
 for (let i = 0; i < 50; i++) {
-  const dx = engine.draw(jogadores14, { listaMax: 14, nPerTeam: 7, balanceByStars: false });
-  if ((dx.gkA.player && !dx.gkA.fromVolunteers) || (dx.gkB.player && !dx.gkB.fromVolunteers)) {
-    gkBugFound = true;
-  }
+  const dx = engine.draw(cenario12mais2, { listaMax: 18, nPerTeam: 6, balanceByStars: false });
+  if (dx.teamA.length !== 6 || dx.teamB.length !== 6) invariantOk = false;
+  if (dx.gkA.player === null || dx.gkB.player === null) invariantOk = false;
+  if (!dx.gkA.fromVolunteers || !dx.gkB.fromVolunteers) invariantOk = false;
+  if (dx.gkA.player?.name === dx.gkB.player?.name) invariantOk = false;
+  if (dx.teamA.some(p => p.canGK) || dx.teamB.some(p => p.canGK)) invariantOk = false;
 }
-ok("Goleiro nunca é atribuído fora dos voluntários (50 sorteios)", !gkBugFound);
+ok("Invariante em 50 sorteios (6+6, goleiros distintos e voluntários)", invariantOk);
 
-// ─── 6. DrawEngine: 12 jogadores, 0 goleiros, 6 por time ─────────────────────
-console.log("\n[6] Draw: 12 jogadores, sem goleiro, 6 por time");
+// ─── 6. DrawEngine: 12 campo, 0 goleiros, 6 por time ─────────────────────────
+console.log("\n[6] Draw: 12 jogadores de linha, sem goleiro");
 
-const jogadores12 = Array.from({ length: 12 }, (_, i) => ({
+const cenario12sem = Array.from({ length: 12 }, (_, i) => ({
   name: `Player${i + 1}`,
   canGK: false,
   stars: 3,
 }));
 
-const d6 = engine.draw(jogadores12, { listaMax: 12, nPerTeam: 6, balanceByStars: false });
+const d6 = engine.draw(cenario12sem, { listaMax: 18, nPerTeam: 6, balanceByStars: false });
 
 ok("12 na lista", d6.naLista.length === 12);
 ok("Time A com 6", d6.teamA.length === 6);
 ok("Time B com 6", d6.teamB.length === 6);
-ok("Goleiro A nulo (sem voluntários)", d6.gkA.player === null);
-ok("Goleiro B nulo (sem voluntários)", d6.gkB.player === null);
-ok("Sem warnings de goleiro", !d6.warnings.some(w => w.includes("goleiro")));
+ok("Goleiro A nulo", d6.gkA.player === null);
+ok("Goleiro B nulo", d6.gkB.player === null);
+ok("Warning de sem goleiro", d6.warnings.some(w => w.includes("Sem goleiros")));
 
-// ─── 7. DrawEngine: 10 jogadores, 7 por time (titulares incompletos) ──────────
-console.log("\n[7] Draw: 10 jogadores, 7 por time (titulares incompletos)");
+// ─── 7. DrawEngine: 12 campo + 1 goleiro (caso 1 GK) ─────────────────────────
+console.log("\n[7] Draw: 12 jogadores de linha + 1 goleiro, 6 por time");
+
+const cenario12mais1 = [
+  ...Array.from({ length: 12 }, (_, i) => ({ name: `L${i + 1}`, canGK: false, stars: 3 })),
+  { name: "GoleiroÚnico", canGK: true, stars: 3 },
+];
+
+const d7 = engine.draw(cenario12mais1, { listaMax: 18, nPerTeam: 6, balanceByStars: false });
+
+ok("Time A com 6 de linha", d7.teamA.length === 6);
+ok("Time B com 6 de linha", d7.teamB.length === 6);
+ok("Apenas um time tem goleiro voluntário",
+  (d7.gkA.player !== null) !== (d7.gkB.player !== null),
+  `gkA=${d7.gkA.player?.name}, gkB=${d7.gkB.player?.name}`);
+ok("Goleiro é o GoleiroÚnico", d7.gkA.player?.name === "GoleiroÚnico" || d7.gkB.player?.name === "GoleiroÚnico");
+ok("Warning de só um goleiro", d7.warnings.some(w => w.includes("Só um goleiro")));
+
+// ─── 8. DrawEngine: 10 campo, 6 por time (titulares incompletos) ─────────────
+console.log("\n[8] Draw: 10 jogadores, 6 por time (titulares incompletos)");
 
 const jogadores10 = Array.from({ length: 10 }, (_, i) => ({
   name: `P${i + 1}`,
@@ -190,32 +212,34 @@ const jogadores10 = Array.from({ length: 10 }, (_, i) => ({
   stars: 3,
 }));
 
-const d7 = engine.draw(jogadores10, { listaMax: 18, nPerTeam: 7, balanceByStars: false });
+const d8 = engine.draw(jogadores10, { listaMax: 18, nPerTeam: 6, balanceByStars: false });
 
-ok("10 na lista (não 18)", d7.naLista.length === 10);
-ok("Time A com 5 (metade de 10)", d7.teamA.length === 5, `got ${d7.teamA.length}`);
-ok("Time B com 5", d7.teamB.length === 5, `got ${d7.teamB.length}`);
-ok("Warning de titulares incompletos", d7.warnings.some(w => w.includes("Titular")));
+ok("10 na lista (não 18)", d8.naLista.length === 10);
+ok("Time A com 5 (alternado)", d8.teamA.length === 5, `got ${d8.teamA.length}`);
+ok("Time B com 5", d8.teamB.length === 5, `got ${d8.teamB.length}`);
+ok("Warning de titulares incompletos", d8.warnings.some(w => w.includes("Titulares")));
 
-// ─── 8. DrawEngine: lista com 18 mas só 14 jogam (listaMax=18, nPerTeam=7) ────
-console.log("\n[8] Draw: 18 na lista, 7 por time (4 reservas)");
+// ─── 9. DrawEngine: 18 campo + 2 GK, 6 por time (6 reservas de linha) ────────
+console.log("\n[9] Draw: 18 campo + 2 goleiros, 6 por time → 6 reservas");
 
-const jogadores18 = Array.from({ length: 18 }, (_, i) => ({
-  name: `J${i + 1}`,
-  canGK: i === 0 || i === 1,
-  stars: 3,
-}));
+const cenario18mais2 = [
+  ...Array.from({ length: 18 }, (_, i) => ({ name: `J${i + 1}`, canGK: false, stars: 3 })),
+  { name: "G1", canGK: true, stars: 3 },
+  { name: "G2", canGK: true, stars: 3 },
+];
 
-const d8 = engine.draw(jogadores18, { listaMax: 18, nPerTeam: 7, balanceByStars: false });
+const d9 = engine.draw(cenario18mais2, { listaMax: 18, nPerTeam: 6, balanceByStars: false });
 
-ok("18 na lista", d8.naLista.length === 18);
-ok("Time A com 7", d8.teamA.length === 7);
-ok("Time B com 7", d8.teamB.length === 7);
-ok("4 reservas (18 - 14)", d8.reservas.length === 4, `got ${d8.reservas.length}`);
-ok("Sem supletes (todos na lista de 18)", d8.foraLista.length === 0);
+ok("18 de linha na lista", d9.naLista.length === 18);
+ok("Time A com 6", d9.teamA.length === 6);
+ok("Time B com 6", d9.teamB.length === 6);
+ok("6 reservas de linha (18 - 12)", d9.reservas.length === 6, `got ${d9.reservas.length}`);
+ok("Sem supletes (todos cabem em 18)", d9.foraLista.length === 0);
+ok("Goleiros sempre jogam (não estão em reservas)", d9.reservas.every(p => !p.canGK));
+ok("Goleiros sempre jogam (não estão em foraLista)", d9.foraLista.every(p => !p.canGK));
 
-// ─── 9. DrawEngine: 20 inscritos, lista máx 18 (2 supletes) ─────────────────
-console.log("\n[9] Draw: 20 inscritos, lista máx 18 (2 supletes)");
+// ─── 10. DrawEngine: 20 inscritos de linha, lista máx 18 (2 supletes) ────────
+console.log("\n[10] Draw: 20 de linha, listaMax 18 (2 supletes)");
 
 const jogadores20 = Array.from({ length: 20 }, (_, i) => ({
   name: `X${i + 1}`,
@@ -223,26 +247,33 @@ const jogadores20 = Array.from({ length: 20 }, (_, i) => ({
   stars: 3,
 }));
 
-const d9 = engine.draw(jogadores20, { listaMax: 18, nPerTeam: 7, balanceByStars: false });
+const d10 = engine.draw(jogadores20, { listaMax: 18, nPerTeam: 6, balanceByStars: false });
 
-ok("18 na lista (cortados em 18)", d9.naLista.length === 18);
-ok("2 supletes (fora da lista)", d9.foraLista.length === 2, `got ${d9.foraLista.length}`);
-ok("4 reservas na lista", d9.reservas.length === 4);
+ok("18 na lista (cortados em listaMax)", d10.naLista.length === 18);
+ok("2 supletes (fora da lista)", d10.foraLista.length === 2, `got ${d10.foraLista.length}`);
+ok("6 reservas na lista", d10.reservas.length === 6);
 
-// ─── 10. WhatsAppExporter ─────────────────────────────────────────────────────
-console.log("\n[10] WhatsAppExporter: formato do texto gerado");
+// ─── 11. WhatsAppExporter ─────────────────────────────────────────────────────
+console.log("\n[11] WhatsAppExporter: formato do texto gerado");
 
-const txt = WhatsAppExporter.buildShareText(d8);
+const txt = WhatsAppExporter.buildShareText(d9);
 ok("Contém título", txt.includes("Pelada — Sorteio de Times"));
 ok("Contém Time A", txt.includes("*Time A*"));
 ok("Contém Time B", txt.includes("*Time B*"));
-ok("Contém lista numerada", txt.includes("1."));
+ok("Contém numeração 1.", txt.includes("1."));
+ok("Contém numeração 6. (último do time)", txt.includes("6."));
+ok("Contém Goleiro: nos times", (txt.match(/Goleiro:/g) ?? []).length >= 2);
 ok("Contém Reservas", txt.includes("*Reservas*"));
 ok("Não contém estrelas", !txt.includes("⭐"));
+ok("Não contém bullets •", !txt.includes("• "));
 ok("Contém bola 19h", txt.includes("19h"));
 
-// ─── 11. Template da lista ────────────────────────────────────────────────────
-console.log("\n[11] Template da lista");
+// caso sem goleiros: ainda tem linha de Goleiro: a combinar
+const txtSemGk = WhatsAppExporter.buildShareText(d6);
+ok("Sem GK: linha 'a combinar' presente", txtSemGk.includes("Goleiro: a combinar"));
+
+// ─── 12. Template da lista ────────────────────────────────────────────────────
+console.log("\n[12] Template da lista");
 
 ok("Título correto", LISTA_TEMPLATE_WHATSAPP.includes("Lista Pelada - 19h"));
 ok("Tem [campo]", LISTA_TEMPLATE_WHATSAPP.includes("[campo]"));

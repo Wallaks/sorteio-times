@@ -61,7 +61,7 @@
           <label for="listaMax">Tamanho da lista</label>
           <input type="number" id="listaMax" min="1" max="40" value="18" />
           <label for="perTeam">Por time</label>
-          <input type="number" id="perTeam" min="1" max="11" value="7" />
+          <input type="number" id="perTeam" min="1" max="11" value="6" />
         </div>
         <div class="row" style="margin-top: 0.75rem">
           <button type="button" class="btn-primary" id="btnDraw">Sortear</button>
@@ -113,11 +113,19 @@
           <li>Clique <strong>Sortear</strong> e depois <strong>Copiar texto p/ WhatsApp</strong> para mandar os times no grupo.</li>
         </ol>
 
-        <h3>Lista variável</h3>
-        <p>Nem sempre fecha com 18. O mínimo para jogar é 6 por lado (12 no total). Ajuste o campo <strong>Tamanho da lista</strong> antes de sortear.</p>
+        <h3>Como o sorteio funciona</h3>
+        <p>Sempre 6 jogadores de linha por time (12 no total). Os goleiros são separados — quem se inscreveu em <strong>[goleiros]</strong> sempre começa jogando.</p>
+        <ol>
+          <li><strong>2 goleiros</strong>: um para cada time, aleatório.</li>
+          <li><strong>1 goleiro</strong>: ele cai num time qualquer; o outro time tira o gol entre os de fora.</li>
+          <li><strong>0 goleiros</strong>: vocês combinam no grupo entre os que ficaram de fora.</li>
+        </ol>
 
-        <h3>Goleiros</h3>
-        <p>São opcionais. Se alguém se inscrever na seção <strong>[goleiros]</strong> da lista, o app mostra o nome no resultado. Se não tiver goleiro, quem ficou de fora decide quem vai no gol — o app não precisa decidir isso.</p>
+        <h3>Suplentes</h3>
+        <p>A seção <strong>[supletes]</strong> é só controle no WhatsApp (quem entra se sair alguém). Na importação a app ignora — eles não viram nem jogadores nem goleiros.</p>
+
+        <h3>Lista variável</h3>
+        <p>Nem sempre fecha com 18. Ajuste o <strong>Tamanho da lista</strong> antes de sortear se quiser mudar o teto.</p>
 
         <h3>Instalar no celular (iPhone)</h3>
         <p>Safari → botão compartilhar → <strong>Adicionar à Tela de Início</strong>. Fica com ícone na home sem precisar de App Store.</p>

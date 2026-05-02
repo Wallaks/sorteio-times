@@ -16,16 +16,16 @@ export class WhatsAppExporter {
     });
     lines.push("");
     lines.push("*Time A*");
-    if (r.gkA.player) lines.push(`Goleiro: ${r.gkA.player.name}`);
-    r.teamA.forEach((p) => lines.push(`• ${p.name}`));
+    lines.push(r.gkA.player ? `Goleiro: ${r.gkA.player.name}` : "Goleiro: a combinar");
+    r.teamA.forEach((p, i) => lines.push(`${i + 1}. ${p.name}`));
     lines.push("");
     lines.push("*Time B*");
-    if (r.gkB.player) lines.push(`Goleiro: ${r.gkB.player.name}`);
-    r.teamB.forEach((p) => lines.push(`• ${p.name}`));
+    lines.push(r.gkB.player ? `Goleiro: ${r.gkB.player.name}` : "Goleiro: a combinar");
+    r.teamB.forEach((p, i) => lines.push(`${i + 1}. ${p.name}`));
     if (r.reservas.length) {
       lines.push("");
       lines.push("*Reservas*");
-      r.reservas.forEach((p) => lines.push(`• ${p.name}`));
+      r.reservas.forEach((p, i) => lines.push(`${i + 1}. ${p.name}`));
     }
     if (r.foraLista.length) {
       lines.push("");
