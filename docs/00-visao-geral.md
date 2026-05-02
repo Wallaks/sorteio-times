@@ -6,10 +6,9 @@ Grupo grande (~60 pessoas) organiza pelada de Fut7 via WhatsApp. Duas vezes por 
 
 ## Objetivo do app
 
-1. **Colar** o texto do grupo e **interpretar** quem é titular, goleiro e suplente (e metadados como “pode gol” / estrelas, se existirem).
-2. **Aplicar** regras de sorteio de forma determinística em relação às regras documentadas (aleatoriedade só onde a regra permitir).
-3. **Respeitar um horário de corte** (ex.: 10 minutos antes da bola rolar) para travar edições e fixar o sorteio “oficial”.
-4. **Devolver** o resultado em um toque (copiar texto formatado para WhatsApp), otimizado para mobile.
+1. **Colar** o texto do grupo e **interpretar** quem é jogador de linha e quem é goleiro (suplentes são ignorados).
+2. **Aplicar** a regra de sorteio Fut7 com goleiros separados do sorteio de linha.
+3. **Devolver** o resultado em um toque (copiar texto formatado para WhatsApp), otimizado para mobile.
 
 ## Persona principal
 
@@ -17,9 +16,10 @@ Grupo grande (~60 pessoas) organiza pelada de Fut7 via WhatsApp. Duas vezes por 
 
 ## Escopo não-objetivo (por ora)
 
-- Integração oficial com API do WhatsApp Business (fora de escopo inicial).
+- Integração oficial com API do WhatsApp Business.
 - Gestão financeira ou presença paga.
+- Sistema de avaliação por estrelas / equilíbrio por nível (foi descontinuado em favor de simplicidade).
 
 ## Alinhamento com o repositório atual
 
-Existe um protótipo em `index.html` com fluxo de colagem, parsing heurístico e sorteio em **dois** times. A documentação de features deve refletir o comportamento desejado; onde o produto pedir **três** times ou outro formato, isso fica explícito em [F-002](features/F-002-sorteio-times.md) e nos ADRs.
+A app está implementada como PWA estática (Vite + TS). Domínio em `src/domain/`, UI em `src/ui/`. Detalhes do sorteio em [F-002](features/F-002-sorteio-times.md), do importador em [F-001](features/F-001-importar-lista-whatsapp.md).

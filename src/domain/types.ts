@@ -2,24 +2,21 @@
  * Modelos de domínio — ver docs/features (F-001 … F-004).
  */
 
-/** Jogador na lista interna (sempre com estrelas 1–5). */
+/** Jogador na lista interna. */
 export interface Player {
   name: string;
   canGK: boolean;
-  stars: number;
 }
 
-/** Linha interpretada na importação (estrelas opcionais até normalizar). */
+/** Linha interpretada na importação. */
 export interface ParsedImportLine {
   name: string;
   canGK: boolean;
-  stars: number | null;
 }
 
 export interface DrawConfig {
   listaMax: number;
   nPerTeam: number;
-  balanceByStars: boolean;
 }
 
 export interface DrawGkPick {
@@ -31,18 +28,15 @@ export interface DrawGkPick {
 export interface Fut7DrawResult {
   listaMax: number;
   nPerTeam: number;
-  balance: boolean;
-  /** Ordem global após embaralho (base para lista e titulares). */
+  /** Ordem dos jogadores de linha após embaralho. */
   listaOrder: Player[];
   naLista: Player[];
   foraLista: Player[];
   teamA: Player[];
   teamB: Player[];
-  sumA: number;
-  sumB: number;
   gkA: DrawGkPick;
   gkB: DrawGkPick;
-  /** Reservas na lista numerada (após os titulares do jogo). */
+  /** Reservas de linha (após os titulares do jogo). */
   reservas: Player[];
   titularesTotal: number;
   warnings: string[];

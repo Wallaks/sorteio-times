@@ -5,7 +5,7 @@
 import { Fut7DrawEngine } from "../domain/Fut7DrawEngine";
 import { ListParser } from "../domain/ListParser";
 import { LISTA_TEMPLATE_WHATSAPP } from "../domain/listaTemplate";
-import { nameKey, normalizePlayer, clampStars, toPlayer } from "../domain/playerUtils";
+import { nameKey, normalizePlayer, toPlayer } from "../domain/playerUtils";
 import type { Fut7DrawResult, Player } from "../domain/types";
 import { WhatsAppExporter } from "../domain/WhatsAppExporter";
 import { PeladaStorage } from "../storage/PeladaStorage";
@@ -153,7 +153,6 @@ export class PeladaApp {
     this.players.push({
       name,
       canGK: this.canGK.checked,
-      stars: 3,
     });
     this.playerName.value = "";
     this.canGK.checked = false;
@@ -168,7 +167,6 @@ export class PeladaApp {
     const keys = this.existingNameKeys();
     let added = 0;
     let dup = 0;
-    const defaultS = clampStars(3);
 
     const entries = ListParser.parse(text);
     for (const parsed of entries) {
@@ -178,7 +176,7 @@ export class PeladaApp {
         continue;
       }
       keys[key] = true;
-      this.players.push(toPlayer(parsed, defaultS));
+      this.players.push(toPlayer(parsed));
       added++;
     }
     this.pasteList.value = "";
@@ -274,7 +272,6 @@ export class PeladaApp {
 
     const listaMax = parseInt(this.listaMaxEl.value, 10);
     const nPerTeam = parseInt(this.perTeam.value, 10);
-    const balance = false;
 
     if (!Number.isFinite(listaMax) || listaMax < 1) {
       this.showMessage("Tamanho de lista inválido.", "error");
@@ -291,7 +288,7 @@ export class PeladaApp {
 
     const result = this.drawEngine.draw(
       this.players.map((p) => normalizePlayer(p)),
-      { listaMax, nPerTeam, balanceByStars: balance }
+      { listaMax, nPerTeam }
     );
 
     this.renderDrawResult(result);
@@ -325,22 +322,16 @@ export class PeladaApp {
       name: string;
       members: Player[];
       gk: Player | null;
-      gkVol: boolean;
-      sum: number;
     }[] = [
       {
-        name: "Time A (colete / camisa)",
+        name: "Colete Azul",
         members: r.teamA,
         gk: r.gkA.player,
-        gkVol: r.gkA.fromVolunteers,
-        sum: r.sumA,
       },
       {
-        name: "Time B",
+        name: "Colete Vermelho",
         members: r.teamB,
         gk: r.gkB.player,
-        gkVol: r.gkB.fromVolunteers,
-        sum: r.sumB,
       },
     ];
 

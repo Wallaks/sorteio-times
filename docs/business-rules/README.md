@@ -14,7 +14,7 @@ Este diretório agrega **regras estáveis** em linguagem de negócio. Os detalhe
 | Tema | Documento de feature | Módulo de código |
 |------|------------------------|------------------|
 | Interpretar colagem WhatsApp | [F-001](../features/F-001-importar-lista-whatsapp.md) | `src/domain/ListParser.ts` |
-| Sorteio (times, goleiros, equilíbrio) | [F-002](../features/F-002-sorteio-times.md) | `src/domain/Fut7DrawEngine.ts` |
+| Sorteio (2 times, goleiros separados) | [F-002](../features/F-002-sorteio-times.md) | `src/domain/Fut7DrawEngine.ts` |
 | Corte e lock | [F-003](../features/F-003-corte-lista.md) | *(a implementar em `src/domain/`)* |
 | Texto para WhatsApp | [F-004](../features/F-004-exportar-whatsapp.md) | `src/domain/WhatsAppExporter.ts` |
 

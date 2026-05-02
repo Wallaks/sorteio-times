@@ -3,7 +3,6 @@
  * @see docs/features/F-001-importar-lista-whatsapp.md
  */
 
-import { clampStars } from "./playerUtils";
 import type { ParsedImportLine } from "./types";
 import { stripInvisible } from "./textUtils";
 
@@ -40,21 +39,7 @@ export class ListParser {
     if (/^\(\s*sem limite/i.test(line)) return null;
     if (/^_?\s*opcional:/i.test(line)) return null;
     if (/^_?exemplo/i.test(line)) return null;
-    if (/^[•·]\s*(coloque|uma pessoa|estrelas?|quem\s+joga)/i.test(line)) return null;
-
-    let stars: number | null = null;
-    const pipeStar = /\|\s*([1-5])\s*$/;
-    const pm = line.match(pipeStar);
-    if (pm) {
-      stars = clampStars(pm[1]!);
-      line = line.replace(pipeStar, "").trim();
-    }
-    const starEnd = /\*+\s*([1-5])\s*$/;
-    const sm = line.match(starEnd);
-    if (sm) {
-      stars = clampStars(sm[1]!);
-      line = line.replace(starEnd, "").trim();
-    }
+    if (/^[•·]\s*(coloque|uma pessoa|quem\s+joga)/i.test(line)) return null;
 
     let gk = !!forceGK;
     const golMatch = /\(\s*gol\s*\)\s*$/i;
@@ -73,7 +58,7 @@ export class ListParser {
     if (/^\d+\s*[\.)]\s*$/.test(line)) return null;
     if (/^\d+$/.test(line)) return null;
 
-    return { name: line, canGK: gk, stars };
+    return { name: line, canGK: gk };
   }
 
   private static matchSectionHeader(line: string): ListSection | null {
@@ -169,6 +154,8 @@ export class ListParser {
         continue;
       }
 
+      if (state === "suplente") continue;
+
       const dotNum = line.match(/^\s*(\d+)[\.)]\s*(.*)$/);
       if (dotNum) {
         const rest = (dotNum[2] ?? "").trim();
@@ -177,8 +164,6 @@ export class ListParser {
         if (p) out.push(p);
         continue;
       }
-
-      if (state === "suplente") continue;
 
       if (state === "goleiro") {
         const p = ListParser.parsePasteLine(line, true);

@@ -42,13 +42,10 @@ flowchart TB
 - **`app/` ou `components/`:** apenas orquestração, timers de UI, formatação de texto para clipboard.
 - **`storage/`:** `load`/`save` de JSON; migração de chaves quando mudar o schema.
 
-## Evolução a partir do estado atual
+## Estado atual
 
-O repositório contém `index.html` monolítico com lógica embutida. A migração recomendada é:
+O repositório já está estruturado em `src/domain/`, `src/ui/`, `src/storage/`, `src/utils/`. O sorteio é em **2 times** (Colete Azul × Colete Vermelho), com goleiros separados do sorteio de linha (ver [F-002](../features/F-002-sorteio-times.md)).
 
-1. Extrair parsing e sorteio para `src/domain/*.ts`.
-2. Cobrir com testes os casos de colagem reais (fixtures em `src/domain/__fixtures__/`).
-3. Generalizar o sorteio de 2 para **3 times** no domínio; UI só repete blocos.
-4. Adicionar **deadline**: comparar `Date.now()` com `dataHoraJogo - offset`; ao passar o corte, desabilitar edição e gravar `sorteioFinal`.
+A suíte `tests/qa.ts` cobre parser, sorteio e exportador.
 
 Detalhes de regras: [business-rules/README.md](../business-rules/README.md).

@@ -1,31 +1,48 @@
 # F-002: Sorteio de times
 
-- **Status:** rascunho
+- **Status:** implementado
+- **Código:** `src/domain/Fut7DrawEngine.ts`
+- **Testes:** `tests/qa.ts` (grupos 5 a 10)
 
 ## Objetivo
 
-Distribuir jogadores em times conforme parâmetros (jogadores por time, equilíbrio por estrelas opcional, regras de goleiro).
+Distribuir jogadores em **dois times** (Colete Azul × Colete Vermelho) seguindo as regras do Fut7 do grupo.
 
-## Esclarecimento de produto: “3 times”
+## Regras
 
-O enunciado do projeto menciona **três times**; o protótipo atual implementa **dois times** (7×7). Antes de implementar:
+### Jogadores de linha
 
-- Confirmar se a pelada é **2 times de 7** (comum em Fut7) ou **3 times** rotativos / mini-jogos.
-- Atualizar este documento com o número de times, tamanho e se há **rodízio** de goleiros entre mais de dois.
+1. Todos os jogadores **não-goleiros** entram num pool único e são embaralhados (Fisher-Yates).
+2. O pool é cortado em `listaMax` (default 18) → `naLista` e `foraLista` (supletes que sobraram).
+3. Os primeiros `2 × nPerTeam` (default `2 × 6 = 12`) são os titulares de linha; o restante de `naLista` vira **reservas**.
+4. Titulares são distribuídos alternadamente entre Time A e Time B (`i % 2`). Como o pool já está embaralhado, isso é equivalente a sortear cada um para um lado.
 
-## Regras (baseadas no protótipo atual — 2 times)
+### Goleiros (regra crítica)
 
-1. Embaralhar ordem global dos jogadores para numerar a “lista” e definir titulares.
-2. Opcional: equilibrar **titulares** por soma de estrelas (greedy por soma acumulada).
-3. Goleiro: preferir voluntários `podeGoleiro`; se faltar, sortear entre titulares e emitir aviso.
+Goleiros **nunca entram no sorteio de linha**. São tratados num pool separado embaralhado:
 
-## Saídas
+| Goleiros inscritos | Comportamento |
+|---|---|
+| 2 | Um para cada time (aleatório). Ambos jogam. |
+| 1 | Cai em um time qualquer. O outro time tira o gol entre os de fora — o app não decide. Warning emitido. |
+| 0 | Os dois times combinam no grupo. Warning emitido. |
 
-- Lista numerada (1…N na lista)
-- Times com goleiro destacado
-- Reservas / suplentes conforme corte da lista
+Goleiros **nunca aparecem em `reservas` nem em `foraLista`** — quem se inscreveu como goleiro sempre joga.
 
-## Implementação (ponteiro)
+### Warnings
 
-- **Código:** `src/domain/Fut7DrawEngine.ts` (classe `Fut7DrawEngine`)
-- **Testes (sugerido):** seed opcional para reprodutibilidade
+- Sem goleiros inscritos → "Sem goleiros na lista — combinem entre os de fora quem vai no gol."
+- 1 goleiro inscrito → "Só um goleiro na lista — o outro time tira o gol entre quem ficou de fora."
+- Titulares de linha < `2 × nPerTeam` → mostra a fração faltante.
+
+## Configuração (`DrawConfig`)
+
+- `listaMax`: corte da lista de jogadores de linha (default 18).
+- `nPerTeam`: jogadores de linha por time (default 6, totalizando 7 com o goleiro = Fut7).
+
+## Saídas (`Fut7DrawResult`)
+
+- `naLista`, `foraLista`, `reservas`: jogadores de linha por bucket.
+- `teamA`, `teamB`: jogadores de linha titulares de cada time.
+- `gkA`, `gkB`: goleiros de cada time (`{ player, fromVolunteers }`); `player` pode ser `null`.
+- `warnings`: avisos contextualizados.

@@ -3,7 +3,7 @@
  * @see docs/features/F-004-exportar-whatsapp.md
  */
 
-import type { Fut7DrawResult, Player } from "./types";
+import type { Fut7DrawResult } from "./types";
 
 export class WhatsAppExporter {
   static buildShareText(r: Fut7DrawResult): string {
@@ -11,15 +11,15 @@ export class WhatsAppExporter {
     lines.push("⚽ *Pelada — Sorteio de Times*");
     lines.push("");
     lines.push(`*Lista (1–${r.naLista.length})*`);
-    r.naLista.forEach((p: Player, i: number) => {
-      lines.push(`${i + 1}. ${p.name}${p.canGK ? " (gol)" : ""}`);
+    r.naLista.forEach((p, i) => {
+      lines.push(`${i + 1}. ${p.name}`);
     });
     lines.push("");
-    lines.push("*Time A*");
+    lines.push("*Colete Azul*");
     lines.push(r.gkA.player ? `Goleiro: ${r.gkA.player.name}` : "Goleiro: a combinar");
     r.teamA.forEach((p, i) => lines.push(`${i + 1}. ${p.name}`));
     lines.push("");
-    lines.push("*Time B*");
+    lines.push("*Colete Vermelho*");
     lines.push(r.gkB.player ? `Goleiro: ${r.gkB.player.name}` : "Goleiro: a combinar");
     r.teamB.forEach((p, i) => lines.push(`${i + 1}. ${p.name}`));
     if (r.reservas.length) {

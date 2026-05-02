@@ -1,6 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <rect width="512" height="512" rx="96" fill="#0c120f"/>
-  <circle cx="256" cy="256" r="160" fill="none" stroke="#1fa86a" stroke-width="18"/>
-  <polygon points="256,130 292,200 370,200 310,248 334,320 256,276 178,320 202,248 142,200 220,200" fill="#1fa86a"/>
-  <text x="256" y="430" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="700" font-size="72" fill="#1fa86a">F7</text>
+  <g transform="translate(256 256)">
+    <circle r="172" fill="#f5f7f4" stroke="#0c120f" stroke-width="6"/>
+    <polygon points="0,-58 55,-18 34,48 -34,48 -55,-18" fill="#0c120f"/>
+    <line x1="0" y1="-58" x2="0" y2="-160" stroke="#0c120f" stroke-width="10" stroke-linecap="round"/>
+    <line x1="55" y1="-18" x2="148" y2="-50" stroke="#0c120f" stroke-width="10" stroke-linecap="round"/>
+    <line x1="34" y1="48" x2="92" y2="135" stroke="#0c120f" stroke-width="10" stroke-linecap="round"/>
+    <line x1="-34" y1="48" x2="-92" y2="135" stroke="#0c120f" stroke-width="10" stroke-linecap="round"/>
+    <line x1="-55" y1="-18" x2="-148" y2="-50" stroke="#0c120f" stroke-width="10" stroke-linecap="round"/>
+  </g>
 </svg>

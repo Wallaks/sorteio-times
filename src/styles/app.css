@@ -7,8 +7,8 @@
       --accent: #2ee59d;
       --accent-dim: #1fa86a;
       --danger: #e85d5d;
-      --team-a: #2ee59d;
-      --team-b: #4db8ff;
+      --team-a: #4db8ff;
+      --team-b: #ef5350;
       --warn-bg: rgba(255, 193, 7, 0.12);
       --warn-border: rgba(255, 193, 7, 0.35);
       --warn-text: #ffd666;
@@ -336,12 +336,6 @@
       border-radius: 4px;
       background: rgba(77, 184, 255, 0.2);
       color: #9fd4ff;
-      flex-shrink: 0;
-    }
-
-    .badge-stars {
-      font-size: 0.75rem;
-      color: #ffd666;
       flex-shrink: 0;
     }
 
