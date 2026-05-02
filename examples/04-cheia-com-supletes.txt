@@ -1,0 +1,35 @@
+⚽ *Lista Pelada - 19h*
+_Não modifique a estrutura da lista._
+
+[campo]
+1. Anderson
+2. Bruno Costa
+3. Cláudio
+4. Daniel Reis
+5. Edson
+6. Fabiano
+7. Geraldo
+8. Heitor
+9. Iago
+10. José Carlos
+11. Klaus
+12. Luiz
+13. Maurício
+14. Nathan
+15. Otávio
+16. Patrick
+17. Quintino
+18. Robson
+19. Samuel
+20. Túlio
+
+[goleiros]
+1. Wellington
+2. Yuri
+
+[supletes]
+1. Zico (que furou)
+2. Adair (chegou tarde)
+3.
+4.
+5.

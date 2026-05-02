@@ -1,0 +1,23 @@
+⚽ *Lista Pelada - 19h*
+_Não modifique a estrutura da lista._
+
+[campo]
+1. *João Silva*
+2. _Pedro Henrique_
+3. ~Carlos~ Eduardo
+4. *Marcos* _Aurélio_
+5. Felipe
+6. *Rafael*
+7. Bruno
+8. Lucas _Oliveira_
+9. Gustavo
+10. Diego
+11. Thiago
+12. André
+
+[goleiros]
+1. *Leandro Barreto*
+2. _Sergio_ Faria
+
+[supletes]
+1.

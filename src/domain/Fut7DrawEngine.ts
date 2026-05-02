@@ -44,6 +44,11 @@ export class Fut7DrawEngine {
       warnings.push("Sem goleiros na lista — combinem entre os de fora quem vai no gol.");
     } else if (goalkeepers.length === 1 && titulares.length >= 2) {
       warnings.push("Só um goleiro na lista — o outro time tira o gol entre quem ficou de fora.");
+    } else if (goalkeepers.length > 2) {
+      const sobrando = goalkeepers.length - 2;
+      warnings.push(
+        `${goalkeepers.length} goleiros inscritos — só 2 entram no sorteio (Fut7 usa 1 por time). ${sobrando} ${sobrando === 1 ? "ficou" : "ficaram"} de fora.`
+      );
     }
     if (titulares.length < titularesTotal) {
       warnings.push(

@@ -253,6 +253,25 @@ ok("Apenas um time tem goleiro voluntário",
 ok("Goleiro é o GoleiroÚnico", d7.gkA.player?.name === "GoleiroÚnico" || d7.gkB.player?.name === "GoleiroÚnico");
 ok("Warning de só um goleiro", d7.warnings.some(w => w.includes("Só um goleiro")));
 
+// ─── 7b. DrawEngine: 12 campo + 3 goleiros (excesso) ────────────────────────
+console.log("\n[7b] Draw: 12 jogadores de linha + 3 goleiros (excesso)");
+
+const cenario12mais3 = [
+  ...Array.from({ length: 12 }, (_, i) => ({ name: `L${i + 1}`, canGK: false })),
+  { name: "GK1", canGK: true },
+  { name: "GK2", canGK: true },
+  { name: "GK3", canGK: true },
+];
+
+const d7b = engine.draw(cenario12mais3, { listaMax: 18, nPerTeam: 6 });
+
+ok("Time A com 6 de linha", d7b.teamA.length === 6);
+ok("Time B com 6 de linha", d7b.teamB.length === 6);
+ok("Goleiro A atribuído", d7b.gkA.player !== null);
+ok("Goleiro B atribuído", d7b.gkB.player !== null);
+ok("Goleiros A e B são distintos", d7b.gkA.player?.name !== d7b.gkB.player?.name);
+ok("Warning de excesso (3 inscritos, 1 fora)", d7b.warnings.some(w => w.includes("3 goleiros") && w.includes("1 ficou")));
+
 // ─── 8. DrawEngine: 10 campo, 6 por time (titulares incompletos) ─────────────
 console.log("\n[8] Draw: 10 jogadores, 6 por time (titulares incompletos)");
 

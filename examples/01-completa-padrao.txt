@@ -1,0 +1,33 @@
+⚽ *Lista Pelada - 19h*
+_Não modifique a estrutura da lista._
+
+[campo]
+1. João Silva
+2. Pedro Henrique
+3. Carlos Eduardo
+4. Marcos Aurélio
+5. Felipe Costa
+6. Rafael Souza
+7. Bruno Lima
+8. Lucas Oliveira
+9. Gustavo Mendes
+10. Diego Ribeiro
+11. Thiago Alves
+12. André Martins
+13. Rodrigo Pereira
+14. Mateus Cardoso
+15. Paulo Henrique
+16. Victor Hugo
+17. Fernando Dias
+18. Alexandre Rocha
+
+[goleiros]
+1. Leandro Barreto
+2. Sergio Faria
+
+[supletes]
+1. Igor Nascimento
+2. Renato Pinto
+3.
+4.
+5.

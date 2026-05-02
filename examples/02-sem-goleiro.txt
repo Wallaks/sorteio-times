@@ -1,0 +1,33 @@
+⚽ *Lista Pelada - 19h*
+_Não modifique a estrutura da lista._
+
+[campo]
+1. Caio
+2. Beto
+3. Daniel
+4. Eduardo
+5. Fábio
+6. Gabriel
+7. Henrique
+8. Iuri
+9. Joaquim
+10. Kauan
+11. Léo
+12. Marcelo
+13.
+14.
+15.
+16.
+17.
+18.
+
+[goleiros]
+1.
+2.
+
+[supletes]
+1.
+2.
+3.
+4.
+5.

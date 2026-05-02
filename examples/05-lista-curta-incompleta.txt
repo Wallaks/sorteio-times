@@ -1,0 +1,33 @@
+⚽ *Lista Pelada - 19h*
+_Não modifique a estrutura da lista._
+
+[campo]
+1. Vinicius
+2. Wagner
+3. Walter
+4. Xavier
+5. Yago
+6. Zé Roberto
+7. Augusto
+8. Breno
+9.
+10.
+11.
+12.
+13.
+14.
+15.
+16.
+17.
+18.
+
+[goleiros]
+1. Cláudio Henrique
+2.
+
+[supletes]
+1.
+2.
+3.
+4.
+5.

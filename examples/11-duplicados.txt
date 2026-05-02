@@ -1,0 +1,23 @@
+⚽ *Lista Pelada - 19h*
+_Não modifique a estrutura da lista._
+
+[campo]
+1. João Silva
+2. Pedro
+3. Carlos
+4. JOÃO SILVA
+5. pedro
+6. Andre
+7. André
+8. Marcos
+9. Felipe
+10. Rafael
+11. carlos
+12. Bruno
+
+[goleiros]
+1. Leandro
+2. Leandro
+
+[supletes]
+1.

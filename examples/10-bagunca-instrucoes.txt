@@ -1,0 +1,31 @@
+⚽ *Lista Pelada - 19h*
+_Não modifique a estrutura da lista._
+_Copiem a lista, preencham e mandem de volta no grupo._
+
+Como preencher: bota o nome no número correspondente.
+
+[campo]
+1. João Silva
+2. Pedro
+———————————
+3. Carlos
+4.
+5. Marcos
+
+6. Felipe
+7.
+8. Lucas
+- Gustavo
+* Diego
+• Thiago
+
+(sem limite de tempo pra fechar a lista)
+
+[goleiros]
+1. Leandro
+———
+2.
+
+[supletes]
+1. Igor
+2. Renato

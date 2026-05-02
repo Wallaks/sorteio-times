@@ -1,0 +1,33 @@
+⚽ *Lista Pelada - 19h*
+_Não modifique a estrutura da lista._
+
+[campo]
+1. Adriano
+2. Bernardo
+3. Cesar
+4. Davi
+5. Erick
+6. Fernando
+7. Gilberto
+8. Hugo
+9. Ivan
+10. Jorge
+11. Kleber
+12. Lourenço
+13. Murilo
+14. Nelson
+15.
+16.
+17.
+18.
+
+[goleiros]
+1. Otávio
+2.
+
+[supletes]
+1.
+2.
+3.
+4.
+5.
