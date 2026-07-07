@@ -2,14 +2,15 @@
  * Orquestração da interface: DOM + estado + domínio.
  */
 
-import { Fut7DrawEngine } from "../domain/Fut7DrawEngine";
-import { ListParser } from "../domain/ListParser";
-import { LISTA_TEMPLATE_WHATSAPP } from "../domain/listaTemplate";
-import { nameKey, normalizePlayer, toPlayer } from "../domain/playerUtils";
-import type { Fut7DrawResult, Player } from "../domain/types";
+import { DrawEngine } from "../domain/DrawEngine";
+import { nameKey, normalizePlayer } from "../domain/playerUtils";
+import type { DrawResult, Player } from "../domain/types";
 import { WhatsAppExporter } from "../domain/WhatsAppExporter";
-import { PeladaStorage } from "../storage/PeladaStorage";
+import { TeamsStorage } from "../storage/TeamsStorage";
 import { copyTextToClipboard } from "../utils/clipboard";
+
+/** Com 2 times, só 2 goleiros entram em campo (1 por time). */
+const GK_MAX = 2;
 
 type MessageKind = "error" | "warn" | "info" | "ok";
 
@@ -21,9 +22,9 @@ function req<T extends HTMLElement>(id: string): T {
 
 const TEAM_DOT_COLORS = ["var(--team-a)", "var(--team-b)"];
 
-export class PeladaApp {
-  private readonly storage = new PeladaStorage();
-  private readonly drawEngine = new Fut7DrawEngine();
+export class TeamsApp {
+  private readonly storage = new TeamsStorage();
+  private readonly drawEngine = new DrawEngine();
 
   private players: Player[] = [];
   private lastShareText = "";
@@ -31,13 +32,10 @@ export class PeladaApp {
   private readonly playerName = req<HTMLInputElement>("playerName");
   private readonly canGK = req<HTMLInputElement>("canGK");
   private readonly btnAdd = req<HTMLButtonElement>("btnAdd");
-  private readonly pasteList = req<HTMLTextAreaElement>("pasteList");
-  private readonly btnPasteImport = req<HTMLButtonElement>("btnPasteImport");
-  private readonly btnCopyTemplate = req<HTMLButtonElement>("btnCopyTemplate");
   private readonly playersList = req<HTMLUListElement>("playersList");
   private readonly emptyHint = req<HTMLElement>("emptyHint");
+  private readonly liveStatus = req<HTMLElement>("liveStatus");
   private readonly playerCount = req<HTMLElement>("playerCount");
-  private readonly listaMaxEl = req<HTMLInputElement>("listaMax");
   private readonly perTeam = req<HTMLInputElement>("perTeam");
   private readonly btnDraw = req<HTMLButtonElement>("btnDraw");
   private readonly btnClearTeams = req<HTMLButtonElement>("btnClearTeams");
@@ -50,11 +48,13 @@ export class PeladaApp {
   private readonly teamsGrid = req<HTMLElement>("teamsGrid");
   private readonly reservasBlock = req<HTMLElement>("reservasBlock");
   private readonly reservasList = req<HTMLUListElement>("reservasList");
-  private readonly suplentesBlock = req<HTMLElement>("suplentesBlock");
-  private readonly suplentesList = req<HTMLUListElement>("suplentesList");
   private readonly helpModal = req<HTMLDialogElement>("helpModal");
   private readonly btnHelp = req<HTMLButtonElement>("btnHelp");
   private readonly btnCloseHelp = req<HTMLButtonElement>("btnCloseHelp");
+  private readonly tabBtnPreparar = req<HTMLButtonElement>("tabBtnPreparar");
+  private readonly tabBtnResultado = req<HTMLButtonElement>("tabBtnResultado");
+  private readonly tabPreparar = req<HTMLElement>("tabPreparar");
+  private readonly tabResultado = req<HTMLElement>("tabResultado");
 
   mount(): void {
     this.loadState();
@@ -63,8 +63,10 @@ export class PeladaApp {
   }
 
   private bindEvents(): void {
-    this.listaMaxEl.addEventListener("change", () => this.saveState());
-    this.perTeam.addEventListener("change", () => this.saveState());
+    this.perTeam.addEventListener("change", () => {
+      this.saveState();
+      this.updateLiveStatus();
+    });
 
     this.btnAdd.addEventListener("click", () => this.addPlayer());
     this.playerName.addEventListener("keydown", (e) => {
@@ -73,8 +75,6 @@ export class PeladaApp {
         this.addPlayer();
       }
     });
-    this.btnPasteImport.addEventListener("click", () => this.importPaste());
-    this.btnCopyTemplate.addEventListener("click", () => this.copyListaTemplate());
     this.btnDraw.addEventListener("click", () => this.runDraw());
     this.btnClearTeams.addEventListener("click", () => this.clearTeams());
     this.btnClearPlayers.addEventListener("click", () => this.clearPlayers());
@@ -84,20 +84,31 @@ export class PeladaApp {
     this.helpModal.addEventListener("click", (e) => {
       if (e.target === this.helpModal) this.helpModal.close();
     });
+    this.tabBtnPreparar.addEventListener("click", () => this.switchTab("preparar"));
+    this.tabBtnResultado.addEventListener("click", () => this.switchTab("resultado"));
+  }
+
+  private switchTab(tab: "preparar" | "resultado"): void {
+    const showResult = tab === "resultado";
+    this.tabPreparar.hidden = showResult;
+    this.tabResultado.hidden = !showResult;
+    this.tabBtnPreparar.classList.toggle("is-active", !showResult);
+    this.tabBtnResultado.classList.toggle("is-active", showResult);
+    this.tabBtnPreparar.setAttribute("aria-selected", String(!showResult));
+    this.tabBtnResultado.setAttribute("aria-selected", String(showResult));
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   private loadState(): void {
     const data = this.storage.load();
     if (!data) return;
     if (data.players) this.players = data.players;
-    if (data.listaMax != null) this.listaMaxEl.value = String(data.listaMax);
     if (data.perTeam != null) this.perTeam.value = String(data.perTeam);
   }
 
   private saveState(): void {
     this.storage.save({
       players: this.players,
-      listaMax: this.listaMaxEl.value,
       perTeam: this.perTeam.value,
     });
   }
@@ -162,48 +173,6 @@ export class PeladaApp {
     this.setWarnings([]);
   }
 
-  private importPaste(): void {
-    const text = this.pasteList.value;
-    const keys = this.existingNameKeys();
-    let added = 0;
-    let dup = 0;
-
-    const entries = ListParser.parse(text);
-    for (const parsed of entries) {
-      const key = nameKey(parsed.name);
-      if (keys[key]) {
-        dup++;
-        continue;
-      }
-      keys[key] = true;
-      this.players.push(toPlayer(parsed));
-      added++;
-    }
-    this.pasteList.value = "";
-    this.renderPlayers();
-    this.hideMessage();
-    this.setWarnings([]);
-    if (added === 0 && dup === 0) {
-      this.showMessage(
-        "Nada para importar — cole a lista do grupo (Lista do Fut / Goleiros / Suplentes), o modelo com [campo] ou um nome por linha.",
-        "warn"
-      );
-    } else {
-      let msg = `Importados ${added} jogador(es).`;
-      if (dup) msg += ` Ignorados ${dup} duplicado(s).`;
-      this.showMessage(msg, added ? "ok" : "info");
-    }
-  }
-
-  private async copyListaTemplate(): Promise<void> {
-    const ok = await copyTextToClipboard(LISTA_TEMPLATE_WHATSAPP);
-    if (ok) {
-      this.showMessage("Lista copiada. Cola no grupo e peça pra preencher e devolver.", "ok");
-    } else {
-      this.showMessage("Não deu pra copiar — selecione o texto manualmente no app.", "error");
-    }
-  }
-
   private extraForPlayer(p: Player): string {
     return p.canGK ? "· gol" : "";
   }
@@ -212,7 +181,7 @@ export class PeladaApp {
     const li = document.createElement("li");
     const n = document.createElement("span");
     n.className = "n";
-    n.textContent = `${String(num)}.`;
+    n.textContent = String(num);
     li.appendChild(n);
     const t = document.createElement("span");
     t.textContent = label;
@@ -263,50 +232,83 @@ export class PeladaApp {
       li.appendChild(removeBtn);
       this.playersList.appendChild(li);
     });
+    this.updateLiveStatus();
     this.saveState();
+  }
+
+  /** Feedback ao vivo enquanto o organizador cadastra quem vai chegando. */
+  private updateLiveStatus(): void {
+    this.liveStatus.innerHTML = "";
+    if (this.players.length === 0) return;
+
+    const field = this.players.filter((p) => !p.canGK).length;
+    const gks = this.players.filter((p) => p.canGK).length;
+    const perTeam = parseInt(this.perTeam.value, 10);
+    const titularesField = (Number.isFinite(perTeam) && perTeam > 0 ? perTeam : 6) * 2;
+
+    const lines: { text: string; kind: "ok" | "info" | "warn" }[] = [];
+
+    if (field < titularesField) {
+      const faltam = titularesField - field;
+      lines.push({
+        text: `${field}/${titularesField} — faltam ${faltam} pra fechar os 2 times.`,
+        kind: "info",
+      });
+    } else {
+      const extras = field - titularesField;
+      let msg = `Pronto pra sortear: ${field} jogador${field > 1 ? "es" : ""}`;
+      if (gks) msg += ` + ${gks} goleiro${gks > 1 ? "s" : ""}`;
+      msg += ".";
+      if (extras > 0) msg += ` ${extras} pro 3º time / reservas.`;
+      lines.push({ text: msg, kind: "ok" });
+    }
+
+    if (gks > GK_MAX) {
+      lines.push({
+        text: `⚠ ${gks} goleiros — só ${GK_MAX} entram (1 por time); os demais ficam de fora do gol.`,
+        kind: "warn",
+      });
+    }
+
+    for (const line of lines) {
+      const p = document.createElement("p");
+      p.className = `live-${line.kind}`;
+      p.textContent = line.text;
+      this.liveStatus.appendChild(p);
+    }
   }
 
   private runDraw(): void {
     this.hideMessage();
     this.setWarnings([]);
 
-    const listaMax = parseInt(this.listaMaxEl.value, 10);
     const nPerTeam = parseInt(this.perTeam.value, 10);
 
-    if (!Number.isFinite(listaMax) || listaMax < 1) {
-      this.showMessage("Tamanho de lista inválido.", "error");
-      return;
-    }
     if (!Number.isFinite(nPerTeam) || nPerTeam < 1) {
       this.showMessage("Jogadores por time inválido.", "error");
       return;
     }
     if (this.players.length === 0) {
-      this.showMessage("Cadastre ou cole a lista antes de sortear.", "error");
+      this.showMessage("Cadastre a lista antes de sortear.", "error");
       return;
     }
 
     const result = this.drawEngine.draw(
       this.players.map((p) => normalizePlayer(p)),
-      { listaMax, nPerTeam }
+      { listaMax: this.players.length, nPerTeam }
     );
 
     this.renderDrawResult(result);
-
     this.setWarnings(result.warnings);
-    if (result.warnings.length) {
-      this.showMessage("Sorteio feito — confira os avisos abaixo.", "warn");
-    } else {
-      this.showMessage("Pronto. Copie o texto ou mande print no grupo.", "info");
-    }
 
     this.lastShareText = WhatsAppExporter.buildShareText(result);
     this.resultsSection.hidden = false;
+    this.tabBtnResultado.disabled = false;
+    this.switchTab("resultado");
     this.saveState();
   }
 
-  private renderDrawResult(r: Fut7DrawResult): void {
-    const listaMax = r.listaMax;
+  private renderDrawResult(r: DrawResult): void {
     const titularesTotal = r.titularesTotal;
 
     this.listaNumerada.innerHTML = "";
@@ -324,12 +326,12 @@ export class PeladaApp {
       gk: Player | null;
     }[] = [
       {
-        name: "Colete Azul",
+        name: "Time Azul",
         members: r.teamA,
         gk: r.gkA.player,
       },
       {
-        name: "Colete Vermelho",
+        name: "Time Vermelho",
         members: r.teamB,
         gk: r.gkB.player,
       },
@@ -375,24 +377,6 @@ export class PeladaApp {
       this.reservasBlock.hidden = true;
       this.reservasList.innerHTML = "";
     }
-
-    if (r.foraLista.length) {
-      this.suplentesBlock.hidden = false;
-      this.suplentesList.innerHTML = "";
-      r.foraLista.forEach((p, i) => {
-        const ex = this.extraForPlayer(p);
-        this.suplentesList.appendChild(
-          this.buildNumLi(
-            i + 1,
-            p.name,
-            `suplete · fora da lista ${listaMax}${ex ? ` ${ex}` : ""}`
-          )
-        );
-      });
-    } else {
-      this.suplentesBlock.hidden = true;
-      this.suplentesList.innerHTML = "";
-    }
   }
 
   private async copyShare(): Promise<void> {
@@ -413,10 +397,10 @@ export class PeladaApp {
     this.listaNumerada.innerHTML = "";
     this.teamsGrid.innerHTML = "";
     this.reservasList.innerHTML = "";
-    this.suplentesList.innerHTML = "";
     this.reservasBlock.hidden = true;
-    this.suplentesBlock.hidden = true;
     this.resultsSection.hidden = true;
+    this.tabBtnResultado.disabled = true;
+    this.switchTab("preparar");
     this.lastShareText = "";
     this.hideMessage();
     this.setWarnings([]);

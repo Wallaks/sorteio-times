@@ -1,15 +1,14 @@
 /**
- * Sorteio Fut7 — sorteia jogadores de linha em dois times.
- * Goleiros são separados do sorteio: se inscritos, sempre começam jogando.
- * @see docs/features/F-002-sorteio-times.md
+ * Sorteio — divide os jogadores de linha em dois times.
+ * Goleiros são separados do sorteio: se marcados, sempre começam jogando (1 por time).
  */
 
-import type { DrawConfig, DrawGkPick, Fut7DrawResult, Player } from "./types";
+import type { DrawConfig, DrawGkPick, DrawResult, Player } from "./types";
 import { normalizePlayer } from "./playerUtils";
 import { shuffle } from "./random";
 
-export class Fut7DrawEngine {
-  draw(players: readonly Player[], config: DrawConfig): Fut7DrawResult {
+export class DrawEngine {
+  draw(players: readonly Player[], config: DrawConfig): DrawResult {
     const listaMax = config.listaMax;
     const nPerTeam = config.nPerTeam;
     const titularesTotal = nPerTeam * 2;
@@ -40,14 +39,12 @@ export class Fut7DrawEngine {
       : { player: null, fromVolunteers: false };
 
     const warnings: string[] = [];
-    if (goalkeepers.length === 0 && titulares.length >= 2) {
-      warnings.push("Sem goleiros na lista — combinem entre os de fora quem vai no gol.");
-    } else if (goalkeepers.length === 1 && titulares.length >= 2) {
-      warnings.push("Só um goleiro na lista — o outro time tira o gol entre quem ficou de fora.");
+    if (goalkeepers.length === 1 && titulares.length >= 2) {
+      warnings.push("Só um goleiro marcado — o outro time combina o gol entre quem ficou de fora.");
     } else if (goalkeepers.length > 2) {
       const sobrando = goalkeepers.length - 2;
       warnings.push(
-        `${goalkeepers.length} goleiros inscritos — só 2 entram no sorteio (Fut7 usa 1 por time). ${sobrando} ${sobrando === 1 ? "ficou" : "ficaram"} de fora.`
+        `${goalkeepers.length} goleiros marcados — só 2 entram no sorteio (1 por time). ${sobrando} ${sobrando === 1 ? "ficou" : "ficaram"} de fora.`
       );
     }
     if (titulares.length < titularesTotal) {

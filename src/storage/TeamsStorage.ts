@@ -1,22 +1,21 @@
 import type { Player } from "../domain/types";
 import { normalizePlayer } from "../domain/playerUtils";
 
-const STORAGE_KEY = "pelada-fut7-v4";
+const STORAGE_KEY = "sorteio-times-v1";
 
-export interface PeladaPersistedPayload {
+export interface StoredState {
   players: Player[];
-  listaMax: string;
   perTeam: string;
 }
 
-export class PeladaStorage {
+export class TeamsStorage {
   constructor(private readonly key: string = STORAGE_KEY) {}
 
-  load(): Partial<PeladaPersistedPayload> | null {
+  load(): Partial<StoredState> | null {
     try {
       const raw = localStorage.getItem(this.key);
       if (!raw) return null;
-      const data = JSON.parse(raw) as Partial<PeladaPersistedPayload>;
+      const data = JSON.parse(raw) as Partial<StoredState>;
       if (Array.isArray(data.players)) {
         data.players = data.players
           .map((p) => normalizePlayer(p))
@@ -28,7 +27,7 @@ export class PeladaStorage {
     }
   }
 
-  save(payload: PeladaPersistedPayload): void {
+  save(payload: StoredState): void {
     try {
       localStorage.setItem(this.key, JSON.stringify(payload));
     } catch {

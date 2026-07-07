@@ -1,7 +1,7 @@
 {
-  "name": "Pelada Fut7 — Sorteio",
-  "short_name": "Fut7 Sorteio",
-  "description": "Lista, times e sorteio para pelada fut7 / society",
+  "name": "Sorteio de Times",
+  "short_name": "Sorteio",
+  "description": "Sorteia jogadores em dois times de forma rápida e justa.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0c120f",

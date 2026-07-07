@@ -1,4 +1,4 @@
-import type { ParsedImportLine, Player } from "./types";
+import type { Player } from "./types";
 
 export function nameKey(name: string): string {
   return name
@@ -14,8 +14,4 @@ export function normalizePlayer(p: Partial<Player> & { name?: string }): Player 
     name: String(p.name ?? "").trim(),
     canGK: !!p.canGK,
   };
-}
-
-export function toPlayer(line: ParsedImportLine): Player {
-  return normalizePlayer({ name: line.name, canGK: line.canGK });
 }
